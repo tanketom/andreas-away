@@ -14,6 +14,9 @@ fetch('quotes.json')
     .catch(error => console.error('Error fetching quotes:', error));
 
 function moveCharacter() {
+    const currentX = character.offsetLeft;
+    const step = 5; // Step size for movement
+
     if (idle) {
         // Set idle frame and maintain last direction
         character.style.backgroundPosition = "0 0"; // Idle frame
@@ -21,8 +24,6 @@ function moveCharacter() {
     } else {
         // Set walking frame
         character.style.backgroundPosition = "-100px 0"; // Walking frame
-        const currentX = character.offsetLeft;
-        const step = 5; // Step size for movement
 
         // Move character towards targetX
         if (currentX < targetX) {
@@ -37,6 +38,7 @@ function moveCharacter() {
             idle = true; // Stop moving when target is reached
         }
     }
+
     // Update speech bubble position to follow character
     speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2}px`;
     speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
@@ -74,8 +76,8 @@ document.addEventListener('click', (event) => {
     targetX = event.clientX - character.offsetWidth / 2;
 });
 
-// Show speech bubble every 30 seconds
-setInterval(showSpeechBubble, 30000);
+// Show speech bubble every 15 seconds
+setInterval(showSpeechBubble, 15000);
 
 // Random walk every 5 seconds
 setInterval(randomWalk, 5000);
