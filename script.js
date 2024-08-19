@@ -32,14 +32,10 @@ character.style.transform = "translate(-50%, -50%)";
 // Function to show speech bubble
 function showSpeechBubble() {
     if (quotes.length > 0) {
-        // Select a random quote
         const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
         speechBubble.textContent = randomQuote;
         speechBubble.style.display = 'block';
-
-        // Position speech bubble relative to character
         updateSpeechBubblePosition();
-
         setTimeout(() => {
             speechBubble.style.display = 'none';
         }, 13000); // Display for 13 seconds
@@ -52,63 +48,67 @@ function updateSpeechBubblePosition() {
     speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
 }
 
-// Function to handle character movement
-function moveCharacter() {
+// Function to handle character movement and motivation
+function moveCharacter(target = null) {
     if (!isWalking) {
         isWalking = true;
-        const direction = Math.random() < 0.5 ? -1 : 1; // Random direction: left or right
-        const distance = Math.random() * 200 + 100; // Random distance: 100-300 pixels
-        const newLeft = character.offsetLeft + direction * distance;
-        const duration = distance / 50 * 1000; // Calculate duration based on distance for slower movement
+        let newLeft, duration;
 
-        // Ensure character stays within viewport and doesn't go past coffee machine
-        if (newLeft > 0 && newLeft < coffeeMachine.offsetLeft + coffeeMachine.offsetWidth - character.offsetWidth) {
-            character.style.transition = `left ${duration}ms ease-in-out`; // Set transition duration
+        if (target) {
+            newLeft = target.offsetLeft + (target === coffeeMachine ? target.offsetWidth : 0);
+            duration = Math.abs(newLeft - character.offsetLeft) / 50 * 1000;
+        } else {
+            const direction = Math.random() < 0.5 ? -1 : 1;
+            const distance = Math.random() * 200 + 100;
+            newLeft = character.offsetLeft + direction * distance;
+            duration = distance / 50 * 1000;
+        }
+
+        if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
+            character.style.transition = `left ${duration}ms ease-in-out`;
             character.style.left = `${newLeft}px`;
         }
 
         setTimeout(() => {
             isWalking = false;
-            idleCharacter();
-        }, duration); // Wait for the movement to complete
+            if (target === coffeeMachine && character.offsetLeft >= coffeeMachine.offsetLeft && character.offsetLeft <= coffeeMachine.offsetLeft + coffeeMachine.offsetWidth) {
+                getCoffee();
+            } else if (target === emailBox && character.offsetLeft >= emailBox.offsetLeft && character.offsetLeft <= emailBox.offsetLeft + emailBox.offsetWidth) {
+                handleEmails();
+            } else {
+                idleCharacter();
+            }
+        }, duration);
     }
 }
 
 // Function to handle character idling
 function idleCharacter() {
-    const idleTime = Math.random() * 4000 + 3000; // Random idle time: 3-7 seconds
+    const idleTime = Math.random() * 4000 + 3000;
     setTimeout(() => {
         if (hasCoffee) {
             putDownCoffee();
-        } else if (Math.random() < 0.3) { // 30% chance to go to coffee machine
-            goToCoffeeMachine();
+        } else if (Math.random() < 0.3) {
+            moveCharacter(coffeeMachine);
+        } else if (emailCount > 0 && Math.random() < 0.5) {
+            moveCharacter(emailBox);
         } else {
             moveCharacter();
         }
     }, idleTime);
 }
 
-// Function to handle going to coffee machine
-const coffeeSound = new Audio('path/to/coffee-sound.mp3'); // Add the path to your sound file
+// Function to get coffee
+const coffeeSound = new Audio('path/to/coffee-sound.mp3');
 
-function goToCoffeeMachine() {
-    const coffeeMachineLeft = coffeeMachine.offsetLeft + coffeeMachine.offsetWidth;
-    const duration = Math.abs(coffeeMachineLeft - character.offsetLeft) / 50 * 1000; // Calculate duration based on distance
-
-    character.style.transition = `left ${duration}ms ease-in-out`; // Set transition duration
-    character.style.left = `${coffeeMachineLeft}px`;
-
+function getCoffee() {
+    hasCoffee = true;
+    character.classList.add('holding-coffee');
+    coffeeSound.play();
+    showCoffeeSpeechBubble();
     setTimeout(() => {
-        if (character.offsetLeft >= coffeeMachine.offsetLeft && character.offsetLeft <= coffeeMachine.offsetLeft + coffeeMachine.offsetWidth) {
-            hasCoffee = true;
-            character.classList.add('holding-coffee');
-            coffeeSound.play(); // Play sound effect
-            showCoffeeSpeechBubble(); // Show speech bubble when getting coffee
-            setTimeout(() => {
-                walkWithCoffee();
-            }, 15000); // Hold coffee for 15 seconds
-        }
-    }, duration); // Wait for the movement to complete
+        walkWithCoffee();
+    }, 15000);
 }
 
 // Function to show speech bubble when getting coffee
@@ -118,18 +118,18 @@ function showCoffeeSpeechBubble() {
     updateSpeechBubblePosition();
     setTimeout(() => {
         speechBubble.style.display = 'none';
-    }, 3000); // Display for 3 seconds
+    }, 3000);
 }
 
 // Function to handle walking with coffee
 function walkWithCoffee() {
-    const walkTime = 30000; // Walk with coffee for 30 seconds
+    const walkTime = 30000;
     const startTime = Date.now();
 
     function walk() {
         if (Date.now() - startTime < walkTime) {
             moveCharacter();
-            setTimeout(walk, 1000); // Move every second
+            setTimeout(walk, 1000);
         } else {
             putDownCoffee();
         }
@@ -143,13 +143,12 @@ function putDownCoffee() {
     if (hasCoffee) {
         const coffeeCup = document.createElement('div');
         coffeeCup.textContent = '☕';
-        coffeeCup.style.position = 'absolute';
+        coffeeCup.classList.add('coffee-cup');
         coffeeCup.style.left = `${character.offsetLeft}px`;
         coffeeCup.style.top = `${character.offsetTop + character.offsetHeight}px`;
         document.body.appendChild(coffeeCup);
         coffeeCups.push(coffeeCup);
 
-        // Remove oldest coffee cup if more than 100
         if (coffeeCups.length > 100) {
             const oldestCup = coffeeCups.shift();
             document.body.removeChild(oldestCup);
@@ -163,46 +162,22 @@ function putDownCoffee() {
 
 // Function to update email count
 function updateEmailCount() {
-    emailCount += Math.floor(Math.random() * 5) + 1; // Increase by 1-5
+    emailCount += Math.floor(Math.random() * 5) + 1;
     emailCountElement.textContent = emailCount;
-    setTimeout(updateEmailCount, Math.random() * 25000 + 5000); // Update every 5-30 seconds
+    setTimeout(updateEmailCount, Math.random() * 25000 + 5000);
 }
 
-// Function to handle character's urgency to get to email box
-function checkEmailUrgency() {
-    if (emailCount > 0) {
-        const distanceToEmailBox = Math.abs(emailBox.offsetLeft - character.offsetLeft);
-        const urgency = Math.min(emailCount / 10, 1); // Scale urgency based on email count
-        const moveChance = urgency * 0.5; // 50% chance at max urgency
-
-        if (Math.random() < moveChance) {
-            moveToEmailBox();
+// Function to handle emails
+function handleEmails() {
+    const interval = setInterval(() => {
+        if (emailCount > 0) {
+            emailCount--;
+            emailCountElement.textContent = emailCount;
+        } else {
+            clearInterval(interval);
+            idleCharacter();
         }
-    }
-    setTimeout(checkEmailUrgency, 1000); // Check every second
-}
-
-// Function to move character to email box
-function moveToEmailBox() {
-    const emailBoxLeft = emailBox.offsetLeft;
-    const duration = Math.abs(emailBoxLeft - character.offsetLeft) / 50 * 1000; // Calculate duration based on distance
-
-    character.style.transition = `left ${duration}ms ease-in-out`; // Set transition duration
-    character.style.left = `${emailBoxLeft}px`;
-
-    setTimeout(() => {
-        if (character.offsetLeft >= emailBox.offsetLeft && character.offsetLeft <= emailBox.offsetLeft + emailBox.offsetWidth) {
-            const interval = setInterval(() => {
-                if (emailCount > 0) {
-                    emailCount--;
-                    emailCountElement.textContent = emailCount;
-                } else {
-                    clearInterval(interval);
-                    idleCharacter();
-                }
-            }, 500); // Decrease email count every 0.5 seconds
-        }
-    }, duration); // Wait for the movement to complete
+    }, 500);
 }
 
 // Show speech bubble every 15 seconds
@@ -215,4 +190,3 @@ setInterval(updateSpeechBubblePosition, 5);
 showSpeechBubble();
 idleCharacter();
 updateEmailCount();
-checkEmailUrgency();

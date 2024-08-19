@@ -122,3 +122,22 @@ body {
         transform: translateY(-15px);
     }
 }
+
+@keyframes dropCoffee {
+    0% {
+        top: 50%;
+        left: -20px;
+        transform: translateY(-50%);
+    }
+    100% {
+        top: 100%;
+        left: 0;
+        transform: translateY(0);
+    }
+}
+
+.coffee-cup {
+    position: absolute;
+    font-size: 30px;
+    animation: dropCoffee 1s forwards; /* Animate the drop */
+}
