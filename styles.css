@@ -5,20 +5,24 @@ body {
     flex-direction: column;
     height: 100vh;
     position: relative;
-    background-color: lightgray; /* Set background to light gray */
+    background-color: lightgray;
+}
+
+header, main, footer {
+    padding: 1rem;
 }
 
 #character {
-    width: 69px;
-    height: 111px;
+    width: 4.3125rem; /* 69px */
+    height: 6.9375rem; /* 111px */
     background-color: #743a9c;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: left 1s ease-in-out, top 1s ease-in-out; /* Added ease-in-out transition */
-    z-index: 2; /* Ensure character is in front of email box */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
+    transition: left 1s ease-in-out, top 1s ease-in-out;
+    z-index: 2;
 }
 
 #character::before {
@@ -27,28 +31,28 @@ body {
     top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 65px; /* Updated font size */
+    font-size: 4.0625rem; /* 65px */
 }
 
 #character.holding-coffee::after {
     content: '☕';
     position: absolute;
-    left: -20px;
+    left: -1.25rem; /* 20px */
     top: 50%;
     transform: translateY(-50%);
-    font-size: 30px;
+    font-size: 1.875rem; /* 30px */
 }
 
 #speech-bubble {
     position: absolute;
     background-color: white;
     border: 1px solid black;
-    padding: 10px;
+    padding: 0.625rem; /* 10px */
     display: none;
-    max-width: 200px;
-    border-radius: 10px;
-    animation: fadeIn 1s, fadeOut 1s 12s; /* Added fade-in and fade-out effect */
-    z-index: 3; /* Ensure speech bubble is in front */
+    max-width: 12.5rem; /* 200px */
+    border-radius: 0.625rem; /* 10px */
+    animation: fadeIn 1s, fadeOut 1s 12s;
+    z-index: 3;
 }
 
 @keyframes fadeIn {
@@ -62,20 +66,20 @@ body {
 }
 
 #coffee-machine {
-    width: 100px;
-    height: 200px;
+    width: 6.25rem; /* 100px */
+    height: 12.5rem; /* 200px */
     background-color: black;
     position: absolute;
-    left: 20px;
+    left: 1.25rem; /* 20px */
     top: 50%;
     transform: translateY(-50%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 50px;
+    font-size: 3.125rem; /* 50px */
     color: white;
-    z-index: 4; /* Ensure coffee machine is in front of character */
+    z-index: 4;
 }
 
 #footer {
@@ -83,32 +87,31 @@ body {
     background-color: #333;
     color: white;
     text-align: center;
-    padding: 10px;
+    padding: 0.625rem; /* 10px */
 }
 
-/* New styles for the white box */
 #email-box {
     position: absolute;
     width: 30%;
     height: 16.875%; /* 16:9 aspect ratio */
-    background-color: #f0f0f0; /* Light gray background */
-    border: 2px solid #333; /* Darker border */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    background-color: #f0f0f0;
+    border: 2px solid #333;
+    border-radius: 0.3125rem; /* 5px */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
     right: 5%;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 50px;
-    z-index: 1; /* Ensure email box is behind character */
+    font-size: 3.125rem; /* 50px */
+    z-index: 1;
 }
 
 #email-box .email-count {
     color: red;
-    margin-left: 10px;
-    animation: bounce 1s; /* Apply bounce animation */
+    margin-left: 0.625rem; /* 10px */
+    animation: bounce 1s;
 }
 
 @keyframes bounce {
@@ -116,17 +119,17 @@ body {
         transform: translateY(0);
     }
     40% {
-        transform: translateY(-30px);
+        transform: translateY(-1.875rem); /* 30px */
     }
     60% {
-        transform: translateY(-15px);
+        transform: translateY(-0.9375rem); /* 15px */
     }
 }
 
 @keyframes dropCoffee {
     0% {
         top: 50%;
-        left: -20px;
+        left: -1.25rem; /* 20px */
         transform: translateY(-50%);
     }
     100% {
@@ -138,6 +141,6 @@ body {
 
 .coffee-cup {
     position: absolute;
-    font-size: 30px;
-    animation: dropCoffee 1s forwards; /* Animate the drop */
+    font-size: 1.875rem; /* 30px */
+    animation: dropCoffee 1s forwards;
 }

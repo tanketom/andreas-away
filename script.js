@@ -17,11 +17,7 @@ fetch('quotes.json')
     })
     .catch(error => {
         console.error('Error fetching quotes:', error);
-        speechBubble.textContent = 'Failed to load quotes.';
-        speechBubble.style.display = 'block';
-        setTimeout(() => {
-            speechBubble.style.display = 'none';
-        }, 5000); // Display error message for 5 seconds
+        showTemporaryMessage('Failed to load quotes.', 5000);
     });
 
 // Set initial position
@@ -33,13 +29,18 @@ character.style.transform = "translate(-50%, -50%)";
 function showSpeechBubble() {
     if (quotes.length > 0) {
         const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        speechBubble.textContent = randomQuote;
-        speechBubble.style.display = 'block';
-        updateSpeechBubblePosition();
-        setTimeout(() => {
-            speechBubble.style.display = 'none';
-        }, 13000); // Display for 13 seconds
+        showTemporaryMessage(randomQuote, 13000);
     }
+}
+
+// Function to show temporary message in speech bubble
+function showTemporaryMessage(message, duration) {
+    speechBubble.textContent = message;
+    speechBubble.style.display = 'block';
+    updateSpeechBubblePosition();
+    setTimeout(() => {
+        speechBubble.style.display = 'none';
+    }, duration);
 }
 
 // Function to update speech bubble position
@@ -99,26 +100,13 @@ function idleCharacter() {
 }
 
 // Function to get coffee
-const coffeeSound = new Audio('path/to/coffee-sound.mp3');
-
 function getCoffee() {
     hasCoffee = true;
     character.classList.add('holding-coffee');
-    coffeeSound.play();
-    showCoffeeSpeechBubble();
+    showTemporaryMessage('*PSSSHhhhhh*', 3000);
     setTimeout(() => {
         walkWithCoffee();
     }, 15000);
-}
-
-// Function to show speech bubble when getting coffee
-function showCoffeeSpeechBubble() {
-    speechBubble.textContent = '*PSSSHhhhhh*';
-    speechBubble.style.display = 'block';
-    updateSpeechBubblePosition();
-    setTimeout(() => {
-        speechBubble.style.display = 'none';
-    }, 3000);
 }
 
 // Function to handle walking with coffee
@@ -140,13 +128,10 @@ function walkWithCoffee() {
 
 // Function to prepare to drop coffee
 function prepareToDropCoffee() {
-    speechBubble.textContent = 'A damned fine cup of coffee!';
-    speechBubble.style.display = 'block';
-    updateSpeechBubblePosition();
+    showTemporaryMessage('A damned fine cup of coffee!', 1000);
     setTimeout(() => {
-        speechBubble.style.display = 'none';
         dropCoffee();
-    }, 1000); // Wait 1 second before dropping the coffee
+    }, 1000);
 }
 
 // Function to handle dropping the coffee cup
