@@ -8,9 +8,10 @@ body {
 }
 
 #character {
-    width: 50px;
-    height: 50px;
-    background-color: blue;
+    width: 100px;
+    height: 100px;
+    background-image: url('gfx/sprite-sheet.png');
+    background-position: 0 0;
     position: absolute;
     top: 50%;
     left: 50%;
