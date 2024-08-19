@@ -1,3 +1,4 @@
+import { quotes } from './quotes.js';
 import { showTemporaryMessage } from './ui.js';
 import { resetCoffeeTimer, updateEmailCount } from './timers.js';
 
@@ -8,6 +9,7 @@ const emailBox = document.getElementById('email-box');
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
+let emailCount = 0;
 let timeSinceCoffee = 0;
 
 export function setInitialPosition() {
@@ -128,4 +130,30 @@ function dropCoffee() {
         resetCoffeeTimer();
     }
     moveCharacter();
+}
+
+export function getContext() {
+    const characterRect = character.getBoundingClientRect();
+    const coffeeMachineRect = coffeeMachine.getBoundingClientRect();
+    const emailBoxRect = emailBox.getBoundingClientRect();
+
+    if (isNear(characterRect, coffeeMachineRect)) {
+        return 'coffee';
+    } else if (isNear(characterRect, emailBoxRect)) {
+        return 'email';
+    } else {
+        return 'general';
+    }
+}
+
+function isNear(characterRect, targetRect) {
+    const distance = Math.hypot(
+        characterRect.left - targetRect.left,
+        characterRect.top - targetRect.top
+    );
+    return distance < 100; // Adjust this value as needed
+}
+
+export function getQuotesForContext(context) {
+    return quotes[context] || quotes['general'];
 }
