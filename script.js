@@ -140,7 +140,7 @@ function dropCoffee() {
         const coffeeCup = document.createElement('div');
         coffeeCup.textContent = '☕';
         coffeeCup.classList.add('coffee-cup');
-        coffeeCup.style.left = `${character.offsetLeft}px`;
+        coffeeCup.style.left = `${character.offsetLeft + character.offsetWidth / 2 - 15}px`; // Center the cup below the character
         coffeeCup.style.top = `${character.offsetTop + character.offsetHeight}px`;
         document.body.appendChild(coffeeCup);
         coffeeCups.push(coffeeCup);

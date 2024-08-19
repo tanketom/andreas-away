@@ -129,12 +129,10 @@ header, main, footer {
 @keyframes dropCoffee {
     0% {
         top: 50%;
-        left: -1.25rem; /* 20px */
         transform: translateY(-50%);
     }
     100% {
-        top: 100%;
-        left: 0;
+        top: calc(100vh - 30px); /* Adjust to stop at the bottom of the screen */
         transform: translateY(0);
     }
 }
