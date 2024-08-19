@@ -254,7 +254,7 @@ function resetCoffeeTimer() {
 
 // Function to update email count
 function updateEmailCount() {
-    emailCount += Math.floor(Math.random() * 5) + 1;
+    emailCount += Math.floor(Math.random() * 2) + 1;
     emailCountElement.textContent = emailCount;
     if (emailCount > 25) {
         character.classList.add('needs-emails');
