@@ -1,8 +1,8 @@
 const character = document.getElementById('character');
 const speechBubble = document.getElementById('speech-bubble');
-const characterContainer = document.getElementById('character-container');
 let quotes = [];
 let idle = true;
+let targetX = window.innerWidth / 2;
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -14,16 +14,22 @@ fetch('quotes.json')
 
 function moveCharacter() {
     if (idle) {
-        character.style.backgroundImage = "url('gfx/idle.gif')";
+        character.style.backgroundPosition = "0 0"; // Idle frame
     } else {
-        character.style.backgroundImage = "url('gfx/walk.gif')";
-        const randomX = Math.random() * (window.innerWidth - character.offsetWidth);
-        const randomY = Math.random() * (window.innerHeight - character.offsetHeight);
-        character.style.left = `${randomX}px`;
-        character.style.top = `${randomY}px`;
+        character.style.backgroundPosition = "-100px 0"; // Walking frame
+        const currentX = character.offsetLeft;
+        const step = 5; // Step size
+        if (currentX < targetX) {
+            character.style.left = `${currentX + step}px`;
+            character.style.transform = "translate(-50%, -50%) scaleX(1)"; // Facing right
+        } else if (currentX > targetX) {
+            character.style.left = `${currentX - step}px`;
+            character.style.transform = "translate(-50%, -50%) scaleX(-1)"; // Facing left
+        } else {
+            idle = true; // Stop moving when target is reached
+        }
     }
-    idle = !idle;
-    setTimeout(moveCharacter, idle ? 3000 : 1000);
+    setTimeout(moveCharacter, idle ? 3000 : 50);
 }
 
 function showSpeechBubble() {
@@ -39,5 +45,18 @@ function showSpeechBubble() {
     }
 }
 
+function randomWalk() {
+    if (idle) {
+        idle = false;
+        targetX = Math.random() * (window.innerWidth - character.offsetWidth);
+    }
+}
+
+document.addEventListener('click', (event) => {
+    idle = false;
+    targetX = event.clientX - character.offsetWidth / 2;
+});
+
 setInterval(showSpeechBubble, 60000);
+setInterval(randomWalk, 5000); // Random walk every 5 seconds
 moveCharacter();
