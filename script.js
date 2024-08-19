@@ -244,5 +244,5 @@ function handleEmails() {
             clearInterval(interval);
             idleCharacter();
         }
-    }, 500);
+    }, 200);
 }
