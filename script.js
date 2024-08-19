@@ -99,13 +99,15 @@ function goToCoffeeMachine() {
     character.style.left = `${coffeeMachineLeft}px`;
 
     setTimeout(() => {
-        hasCoffee = true;
-        character.classList.add('holding-coffee');
-        coffeeSound.play(); // Play sound effect
-        showCoffeeSpeechBubble(); // Show speech bubble when getting coffee
-        setTimeout(() => {
-            walkWithCoffee();
-        }, 15000); // Hold coffee for 15 seconds
+        if (character.offsetLeft >= coffeeMachine.offsetLeft && character.offsetLeft <= coffeeMachine.offsetLeft + coffeeMachine.offsetWidth) {
+            hasCoffee = true;
+            character.classList.add('holding-coffee');
+            coffeeSound.play(); // Play sound effect
+            showCoffeeSpeechBubble(); // Show speech bubble when getting coffee
+            setTimeout(() => {
+                walkWithCoffee();
+            }, 15000); // Hold coffee for 15 seconds
+        }
     }, duration); // Wait for the movement to complete
 }
 
@@ -189,15 +191,17 @@ function moveToEmailBox() {
     character.style.left = `${emailBoxLeft}px`;
 
     setTimeout(() => {
-        const interval = setInterval(() => {
-            if (emailCount > 0) {
-                emailCount--;
-                emailCountElement.textContent = emailCount;
-            } else {
-                clearInterval(interval);
-                idleCharacter();
-            }
-        }, 500); // Decrease email count every 0.5 seconds
+        if (character.offsetLeft >= emailBox.offsetLeft && character.offsetLeft <= emailBox.offsetLeft + emailBox.offsetWidth) {
+            const interval = setInterval(() => {
+                if (emailCount > 0) {
+                    emailCount--;
+                    emailCountElement.textContent = emailCount;
+                } else {
+                    clearInterval(interval);
+                    idleCharacter();
+                }
+            }, 500); // Decrease email count every 0.5 seconds
+        }
     }, duration); // Wait for the movement to complete
 }
 
