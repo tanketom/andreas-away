@@ -1,5 +1,5 @@
-import { initCharacter, moveCharacter, idleCharacter, getCoffee, handleEmails } from './character.js';
-import { showSpeechBubble, updateEmailCount } from './ui.js';
+import { initCharacter, moveCharacter, idleCharacter } from './scripts/character.js';
+import { showSpeechBubble, updateEmailCount } from './scripts/ui.js';
 
 let quotes = [];
 
@@ -14,7 +14,8 @@ fetch('quotes.json')
         showSpeechBubble('Failed to load quotes.', 5000);
     });
 
-// Initial call to show speech bubble and start idling
+// Initialize character and start initial actions
+initCharacter();
 showSpeechBubble();
 idleCharacter();
 updateEmailCount();

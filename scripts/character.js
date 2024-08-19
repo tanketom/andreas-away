@@ -6,6 +6,7 @@ const emailBox = document.getElementById('email-box');
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
+let emailCount = 0; // Ensure emailCount is defined here
 
 export function initCharacter() {
     character.style.left = "50%";
@@ -61,7 +62,7 @@ export function idleCharacter() {
     }, idleTime);
 }
 
-const coffeeSound = new Audio('path/to/coffee-sound.mp3');
+const coffeeSound = new Audio('assets/sounds/coffee-sound.mp3');
 
 export function getCoffee() {
     hasCoffee = true;
