@@ -3,6 +3,7 @@ const speechBubble = document.getElementById('speech-bubble');
 let quotes = [];
 let idle = true;
 let targetX = window.innerWidth / 2;
+let lastDirection = 1; // 1 for right, -1 for left
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -15,6 +16,7 @@ fetch('quotes.json')
 function moveCharacter() {
     if (idle) {
         character.style.backgroundPosition = "0 0"; // Idle frame
+        character.style.transform = `translate(-50%, -50%) scaleX(${lastDirection})`; // Maintain last direction
     } else {
         character.style.backgroundPosition = "-100px 0"; // Walking frame
         const currentX = character.offsetLeft;
@@ -22,9 +24,11 @@ function moveCharacter() {
         if (currentX < targetX) {
             character.style.left = `${currentX + step}px`;
             character.style.transform = "translate(-50%, -50%) scaleX(1)"; // Facing right
+            lastDirection = 1;
         } else if (currentX > targetX) {
             character.style.left = `${currentX - step}px`;
             character.style.transform = "translate(-50%, -50%) scaleX(-1)"; // Facing left
+            lastDirection = -1;
         } else {
             idle = true; // Stop moving when target is reached
         }
@@ -41,7 +45,7 @@ function showSpeechBubble() {
         speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
         setTimeout(() => {
             speechBubble.style.display = 'none';
-        }, 3000);
+        }, 15000); // Display for 15 seconds
     }
 }
 
@@ -57,6 +61,6 @@ document.addEventListener('click', (event) => {
     targetX = event.clientX - character.offsetWidth / 2;
 });
 
-setInterval(showSpeechBubble, 60000);
+setInterval(showSpeechBubble, 30000); // Show speech bubble every 30 seconds
 setInterval(randomWalk, 5000); // Random walk every 5 seconds
 moveCharacter();
