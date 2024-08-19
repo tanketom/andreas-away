@@ -3,6 +3,7 @@ const speechBubble = document.getElementById('speech-bubble');
 let quotes = [];
 let idle = true;
 let targetX = window.innerWidth / 2;
+let moving = false;
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -32,6 +33,10 @@ function moveCharacter() {
             character.style.transform = "translate(-50%, -50%) scaleX(-1)"; // Facing left
         } else {
             idle = true; // Stop moving when target is reached
+            setTimeout(() => {
+                idle = false;
+                randomWalk();
+            }, 5000); // Idle for 5 seconds after reaching target
         }
     }
 
@@ -39,7 +44,7 @@ function moveCharacter() {
     speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2}px`;
     speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
 
-    setTimeout(moveCharacter, idle ? 3000 : 50); // Adjust timing based on idle state
+    setTimeout(moveCharacter, idle ? 5000 : 50); // Adjust timing based on idle state
 }
 
 function showSpeechBubble() {
@@ -55,14 +60,15 @@ function showSpeechBubble() {
 
         setTimeout(() => {
             speechBubble.style.display = 'none';
-        }, 13000); // Display for 13 seconds
+        }, 15000); // Display for 15 seconds
     }
 }
 
 function randomWalk() {
-    if (idle) {
+    if (!moving) {
         idle = false;
         targetX = Math.random() * (window.innerWidth - character.offsetWidth); // Set random targetX
+        moving = true;
     }
 }
 
@@ -70,13 +76,18 @@ function randomWalk() {
 document.addEventListener('click', (event) => {
     idle = false;
     targetX = event.clientX - character.offsetWidth / 2;
+    moving = true;
 });
 
-// Show speech bubble every 15 seconds
-setInterval(showSpeechBubble, 15000);
+// Show speech bubble every 30 seconds
+setInterval(showSpeechBubble, 30000);
 
 // Random walk every 5 seconds
-setInterval(randomWalk, 5000);
+setInterval(() => {
+    if (!moving) {
+        randomWalk();
+    }
+}, 5000);
 
 // Start character movement
 moveCharacter();
