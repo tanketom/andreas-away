@@ -4,6 +4,7 @@ const coffeeMachine = document.getElementById('coffee-machine');
 let quotes = [];
 let isWalking = false;
 let hasCoffee = false;
+let coffeeCups = [];
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -97,7 +98,7 @@ function goToCoffeeMachine() {
         character.classList.add('holding-coffee');
         showCoffeeSpeechBubble(); // Show speech bubble when getting coffee
         setTimeout(() => {
-            idleCharacter();
+            walkWithCoffee();
         }, 15000); // Hold coffee for 15 seconds
     }, duration); // Wait for the movement to complete
 }
@@ -112,6 +113,23 @@ function showCoffeeSpeechBubble() {
     }, 3000); // Display for 3 seconds
 }
 
+// Function to handle walking with coffee
+function walkWithCoffee() {
+    const walkTime = 30000; // Walk with coffee for 30 seconds
+    const startTime = Date.now();
+
+    function walk() {
+        if (Date.now() - startTime < walkTime) {
+            moveCharacter();
+            setTimeout(walk, 1000); // Move every second
+        } else {
+            putDownCoffee();
+        }
+    }
+
+    walk();
+}
+
 // Function to handle putting down coffee cup
 function putDownCoffee() {
     if (hasCoffee) {
@@ -121,6 +139,14 @@ function putDownCoffee() {
         coffeeCup.style.left = `${character.offsetLeft}px`;
         coffeeCup.style.top = `${character.offsetTop + character.offsetHeight}px`;
         document.body.appendChild(coffeeCup);
+        coffeeCups.push(coffeeCup);
+
+        // Remove oldest coffee cup if more than 100
+        if (coffeeCups.length > 100) {
+            const oldestCup = coffeeCups.shift();
+            document.body.removeChild(oldestCup);
+        }
+
         hasCoffee = false;
         character.classList.remove('holding-coffee');
     }
