@@ -1,5 +1,5 @@
 import { fetchQuotes } from './quotes.js';
-import { setInitialPosition, idleCharacter, moveCharacter } from './character.js';
+import { setInitialPosition, idleCharacter } from './character.js';
 import { initializeTimers } from './timers.js';
 import { showSpeechBubble } from './ui.js';
 

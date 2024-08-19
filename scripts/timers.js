@@ -4,6 +4,9 @@ import { idleCharacter } from './character.js';
 let coffeeTimer;
 let emailCount = 0;
 let emailsRead = 0;
+const emailCountElement = document.querySelector('#email-box .email-count');
+const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
+const emailsReadElement = document.getElementById('emails-read');
 
 export function initializeTimers() {
     setInterval(showSpeechBubble, 15000);
