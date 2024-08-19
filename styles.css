@@ -43,12 +43,12 @@ header, main, footer {
 
 #character.needs-coffee::after {
     content: '💧';
-    left: 20%;
+    left: 5%;
 }
 
 #character.needs-emails::after {
     content: '💧';
-    right: 20%;
+    right: 5%;
 }
 
 #character.holding-coffee::after {

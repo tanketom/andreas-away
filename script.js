@@ -5,6 +5,7 @@ const emailBox = document.getElementById('email-box');
 const emailCountElement = document.querySelector('#email-box .email-count');
 const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
 const emailsReadElement = document.getElementById('emails-read');
+
 let quotes = [];
 let isWalking = false;
 let hasCoffee = false;
@@ -15,20 +16,43 @@ let emailsRead = 0;
 let coffeeTimer;
 
 // Fetch quotes from quotes.json
-fetch('quotes.json')
-    .then(response => response.json())
-    .then(data => {
-        quotes = data.quotes;
-    })
-    .catch(error => {
-        console.error('Error fetching quotes:', error);
-        showTemporaryMessage('Failed to load quotes.', 5000);
-    });
+fetchQuotes();
 
 // Set initial position
-character.style.left = "50%";
-character.style.top = "50%";
-character.style.transform = "translate(-50%, -50%)";
+setInitialPosition();
+
+// Initialize timers and intervals
+initializeTimers();
+
+// Function to fetch quotes
+function fetchQuotes() {
+    fetch('quotes.json')
+        .then(response => response.json())
+        .then(data => {
+            quotes = data.quotes;
+        })
+        .catch(error => {
+            console.error('Error fetching quotes:', error);
+            showTemporaryMessage('Failed to load quotes.', 5000);
+        });
+}
+
+// Function to set initial position
+function setInitialPosition() {
+    character.style.left = "50%";
+    character.style.top = "50%";
+    character.style.transform = "translate(-50%, -50%)";
+}
+
+// Function to initialize timers and intervals
+function initializeTimers() {
+    setInterval(showSpeechBubble, 15000);
+    setInterval(updateSpeechBubblePosition, 5);
+    setInterval(updateEmailCount, Math.random() * 25000 + 5000);
+    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
+    showSpeechBubble();
+    idleCharacter();
+}
 
 // Function to show speech bubble
 function showSpeechBubble() {
@@ -56,37 +80,44 @@ function updateSpeechBubblePosition() {
 
 // Function to handle character movement and motivation
 function moveCharacter(target = null) {
-    if (!isWalking) {
-        isWalking = true;
-        let newLeft, duration;
+    if (isWalking) return;
 
+    isWalking = true;
+    let newLeft, duration;
+
+    if (target) {
+        newLeft = target.offsetLeft + (target === coffeeMachine ? target.offsetWidth : 0);
+        duration = Math.abs(newLeft - character.offsetLeft) / 50 * 1000;
+    } else {
+        const direction = Math.random() < 0.5 ? -1 : 1;
+        const distance = Math.random() * 200 + 100;
+        newLeft = character.offsetLeft + direction * distance;
+        duration = distance / 50 * 1000;
+    }
+
+    if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
+        character.style.transition = `left ${duration}ms ease-in-out`;
+        character.style.left = `${newLeft}px`;
+    }
+
+    setTimeout(() => {
+        isWalking = false;
         if (target) {
-            newLeft = target.offsetLeft + (target === coffeeMachine ? target.offsetWidth : 0);
-            duration = Math.abs(newLeft - character.offsetLeft) / 50 * 1000;
+            handleTargetInteraction(target);
         } else {
-            const direction = Math.random() < 0.5 ? -1 : 1;
-            const distance = Math.random() * 200 + 100;
-            newLeft = character.offsetLeft + direction * distance;
-            duration = distance / 50 * 1000;
+            idleCharacter();
         }
+    }, duration);
+}
 
-        if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
-            character.style.transition = `left ${duration}ms ease-in-out`;
-            character.style.left = `${newLeft}px`;
-        }
-
-        setTimeout(() => {
-            isWalking = false;
-            if (target === coffeeMachine && character.offsetLeft >= coffeeMachine.offsetLeft && character.offsetLeft <= coffeeMachine.offsetLeft + coffeeMachine.offsetWidth) {
-                getCoffee();
-            } else if (target === emailBox && character.offsetLeft >= emailBox.offsetLeft && character.offsetLeft <= emailBox.offsetLeft + emailBox.offsetWidth) {
-                handleEmails();
-            } else if (target === plant && character.offsetLeft >= plant.offsetLeft && character.offsetLeft <= plant.offsetLeft + plant.offsetWidth) {
-                waterPlant();
-            } else {
-                idleCharacter();
-            }
-        }, duration);
+// Function to handle interactions with targets
+function handleTargetInteraction(target) {
+    if (target === coffeeMachine) {
+        getCoffee();
+    } else if (target === emailBox) {
+        handleEmails();
+    } else {
+        idleCharacter();
     }
 }
 
@@ -119,9 +150,7 @@ function getCoffee() {
     character.classList.add('holding-coffee');
     character.classList.remove('needs-coffee');
     showTemporaryMessage('*PSSSHhhhhh*', 3000);
-    setTimeout(() => {
-        walkWithCoffee();
-    }, 15000);
+    setTimeout(walkWithCoffee, 15000);
 }
 
 // Function to handle walking with coffee
@@ -144,9 +173,7 @@ function walkWithCoffee() {
 // Function to prepare to drop coffee
 function prepareToDropCoffee() {
     showTemporaryMessage('A damned fine cup of coffee!', 1000);
-    setTimeout(() => {
-        dropCoffee();
-    }, 1000);
+    setTimeout(dropCoffee, 1000);
 }
 
 // Function to handle dropping the coffee cup
@@ -219,17 +246,3 @@ function handleEmails() {
         }
     }, 500);
 }
-
-// Show speech bubble every 15 seconds
-setInterval(showSpeechBubble, 15000);
-
-// Update speech bubble position continuously
-setInterval(updateSpeechBubblePosition, 5);
-
-// Initial call to show speech bubble and start idling
-showSpeechBubble();
-idleCharacter();
-updateEmailCount();
-
-// Initialize coffee timer
-coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
