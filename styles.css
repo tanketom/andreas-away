@@ -123,6 +123,31 @@ header, main, footer {
     justify-content: center;
     font-size: 3.125rem; /* 50px */
     z-index: 1;
+    overflow: hidden;
+}
+
+#email-box::before {
+    content: '';
+    position: absolute;
+    bottom: -1.25rem; /* 20px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.5rem; /* 40px */
+    height: 1.25rem; /* 20px */
+    background-color: #333;
+    border-radius: 0.3125rem 0.3125rem 0 0; /* Rounded top corners */
+}
+
+#email-box::after {
+    content: '';
+    position: absolute;
+    bottom: -2.5rem; /* 40px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5rem; /* 80px */
+    height: 1.25rem; /* 20px */
+    background-color: #333;
+    border-radius: 0.3125rem; /* Rounded corners */
 }
 
 #email-box .email-count {
