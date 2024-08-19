@@ -1,4 +1,4 @@
-import { showTemporaryMessage, updateSpeechBubblePosition } from './ui.js';
+import { showTemporaryMessage } from './ui.js';
 import { resetCoffeeTimer, updateEmailCount } from './timers.js';
 
 const character = document.getElementById('character');
@@ -8,7 +8,6 @@ const emailBox = document.getElementById('email-box');
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
-let emailCount = 0;
 let timeSinceCoffee = 0;
 
 export function setInitialPosition() {
