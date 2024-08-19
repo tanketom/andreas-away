@@ -15,12 +15,16 @@ fetch('quotes.json')
 
 function moveCharacter() {
     if (idle) {
+        // Set idle frame and maintain last direction
         character.style.backgroundPosition = "0 0"; // Idle frame
         character.style.transform = `translate(-50%, -50%) scaleX(${lastDirection})`; // Maintain last direction
     } else {
+        // Set walking frame
         character.style.backgroundPosition = "-100px 0"; // Walking frame
         const currentX = character.offsetLeft;
-        const step = 5; // Step size
+        const step = 5; // Step size for movement
+
+        // Move character towards targetX
         if (currentX < targetX) {
             character.style.left = `${currentX + step}px`;
             character.style.transform = "translate(-50%, -50%) scaleX(1)"; // Facing right
@@ -33,16 +37,24 @@ function moveCharacter() {
             idle = true; // Stop moving when target is reached
         }
     }
-    setTimeout(moveCharacter, idle ? 3000 : 50);
+    // Update speech bubble position to follow character
+    speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2}px`;
+    speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
+
+    setTimeout(moveCharacter, idle ? 3000 : 50); // Adjust timing based on idle state
 }
 
 function showSpeechBubble() {
     if (quotes.length > 0) {
+        // Select a random quote
         const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
         speechBubble.textContent = randomQuote;
         speechBubble.style.display = 'block';
+
+        // Position speech bubble relative to character
         speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2}px`;
         speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
+
         setTimeout(() => {
             speechBubble.style.display = 'none';
         }, 15000); // Display for 15 seconds
@@ -52,15 +64,21 @@ function showSpeechBubble() {
 function randomWalk() {
     if (idle) {
         idle = false;
-        targetX = Math.random() * (window.innerWidth - character.offsetWidth);
+        targetX = Math.random() * (window.innerWidth - character.offsetWidth); // Set random targetX
     }
 }
 
+// Event listener for mouse click to set targetX
 document.addEventListener('click', (event) => {
     idle = false;
     targetX = event.clientX - character.offsetWidth / 2;
 });
 
-setInterval(showSpeechBubble, 30000); // Show speech bubble every 30 seconds
-setInterval(randomWalk, 5000); // Random walk every 5 seconds
+// Show speech bubble every 30 seconds
+setInterval(showSpeechBubble, 30000);
+
+// Random walk every 5 seconds
+setInterval(randomWalk, 5000);
+
+// Start character movement
 moveCharacter();
