@@ -86,7 +86,7 @@ function idleCharacter() {
 
 // Function to handle going to coffee machine
 function goToCoffeeMachine() {
-    const coffeeMachineLeft = coffeeMachine.offsetLeft - character.offsetWidth;
+    const coffeeMachineLeft = coffeeMachine.offsetLeft + coffeeMachine.offsetWidth;
     const duration = Math.abs(coffeeMachineLeft - character.offsetLeft) / 50 * 1000; // Calculate duration based on distance
 
     character.style.transition = `left ${duration}ms linear`; // Set transition duration
@@ -95,8 +95,21 @@ function goToCoffeeMachine() {
     setTimeout(() => {
         hasCoffee = true;
         character.classList.add('holding-coffee');
-        idleCharacter();
+        showCoffeeSpeechBubble(); // Show speech bubble when getting coffee
+        setTimeout(() => {
+            idleCharacter();
+        }, 15000); // Hold coffee for 15 seconds
     }, duration); // Wait for the movement to complete
+}
+
+// Function to show speech bubble when getting coffee
+function showCoffeeSpeechBubble() {
+    speechBubble.textContent = '*PSSSHhhhhh*';
+    speechBubble.style.display = 'block';
+    updateSpeechBubblePosition();
+    setTimeout(() => {
+        speechBubble.style.display = 'none';
+    }, 3000); // Display for 3 seconds
 }
 
 // Function to handle putting down coffee cup
