@@ -1,7 +1,9 @@
 const character = document.getElementById('character');
 const speechBubble = document.getElementById('speech-bubble');
+const coffeeMachine = document.getElementById('coffee-machine');
 let quotes = [];
 let isWalking = false;
+let hasCoffee = false;
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -42,22 +44,8 @@ function showSpeechBubble() {
 
 // Function to update speech bubble position
 function updateSpeechBubblePosition() {
-    let bubbleLeft = character.offsetLeft + character.offsetWidth / 2;
-    let bubbleTop = character.offsetTop - speechBubble.offsetHeight;
-
-    // Ensure speech bubble stays within viewport
-    if (bubbleLeft + speechBubble.offsetWidth > window.innerWidth) {
-        bubbleLeft = window.innerWidth - speechBubble.offsetWidth;
-    }
-    if (bubbleLeft < 0) {
-        bubbleLeft = 0;
-    }
-    if (bubbleTop < 0) {
-        bubbleTop = character.offsetTop + character.offsetHeight;
-    }
-
-    speechBubble.style.left = `${bubbleLeft}px`;
-    speechBubble.style.top = `${bubbleTop}px`;
+    speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2}px`;
+    speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
 }
 
 // Function to handle character movement
@@ -85,7 +73,40 @@ function moveCharacter() {
 // Function to handle character idling
 function idleCharacter() {
     const idleTime = Math.random() * 4000 + 3000; // Random idle time: 3-7 seconds
-    setTimeout(moveCharacter, idleTime);
+    setTimeout(() => {
+        if (Math.random() < 0.3) { // 30% chance to go to coffee machine
+            goToCoffeeMachine();
+        } else {
+            moveCharacter();
+        }
+    }, idleTime);
+}
+
+// Function to handle going to coffee machine
+function goToCoffeeMachine() {
+    const coffeeMachineLeft = coffeeMachine.offsetLeft - character.offsetWidth;
+    const duration = Math.abs(coffeeMachineLeft - character.offsetLeft) / 50 * 1000; // Calculate duration based on distance
+
+    character.style.transition = `left ${duration}ms linear`; // Set transition duration
+    character.style.left = `${coffeeMachineLeft}px`;
+
+    setTimeout(() => {
+        hasCoffee = true;
+        idleCharacter();
+    }, duration); // Wait for the movement to complete
+}
+
+// Function to handle putting down coffee cup
+function putDownCoffee() {
+    if (hasCoffee) {
+        const coffeeCup = document.createElement('div');
+        coffeeCup.textContent = '☕';
+        coffeeCup.style.position = 'absolute';
+        coffeeCup.style.left = `${character.offsetLeft}px`;
+        coffeeCup.style.top = `${character.offsetTop + character.offsetHeight}px`;
+        document.body.appendChild(coffeeCup);
+        hasCoffee = false;
+    }
 }
 
 // Show speech bubble every 15 seconds
