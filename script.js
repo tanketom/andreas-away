@@ -76,8 +76,8 @@ document.addEventListener('click', (event) => {
     targetX = event.clientX - character.offsetWidth / 2;
 });
 
-// Show speech bubble every 15 seconds
-setInterval(showSpeechBubble, 15000);
+// Show speech bubble every 30 seconds
+setInterval(showSpeechBubble, 30000);
 
 // Random walk every 5 seconds
 setInterval(randomWalk, 5000);
