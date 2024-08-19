@@ -22,7 +22,6 @@ fetch('quotes.json')
 character.style.left = "50%";
 character.style.top = "50%";
 character.style.transform = "translate(-50%, -50%)";
-character.style.transition = "left 1s"; // Add transition for smooth movement
 
 // Function to show speech bubble
 function showSpeechBubble() {
@@ -33,27 +32,32 @@ function showSpeechBubble() {
         speechBubble.style.display = 'block';
 
         // Position speech bubble relative to character
-        let bubbleLeft = character.offsetLeft + character.offsetWidth / 2;
-        let bubbleTop = character.offsetTop - speechBubble.offsetHeight;
-
-        // Ensure speech bubble stays within viewport
-        if (bubbleLeft + speechBubble.offsetWidth > window.innerWidth) {
-            bubbleLeft = window.innerWidth - speechBubble.offsetWidth;
-        }
-        if (bubbleLeft < 0) {
-            bubbleLeft = 0;
-        }
-        if (bubbleTop < 0) {
-            bubbleTop = character.offsetTop + character.offsetHeight;
-        }
-
-        speechBubble.style.left = `${bubbleLeft}px`;
-        speechBubble.style.top = `${bubbleTop}px`;
+        updateSpeechBubblePosition();
 
         setTimeout(() => {
             speechBubble.style.display = 'none';
         }, 13000); // Display for 13 seconds
     }
+}
+
+// Function to update speech bubble position
+function updateSpeechBubblePosition() {
+    let bubbleLeft = character.offsetLeft + character.offsetWidth / 2;
+    let bubbleTop = character.offsetTop - speechBubble.offsetHeight;
+
+    // Ensure speech bubble stays within viewport
+    if (bubbleLeft + speechBubble.offsetWidth > window.innerWidth) {
+        bubbleLeft = window.innerWidth - speechBubble.offsetWidth;
+    }
+    if (bubbleLeft < 0) {
+        bubbleLeft = 0;
+    }
+    if (bubbleTop < 0) {
+        bubbleTop = character.offsetTop + character.offsetHeight;
+    }
+
+    speechBubble.style.left = `${bubbleLeft}px`;
+    speechBubble.style.top = `${bubbleTop}px`;
 }
 
 // Function to handle character movement
@@ -63,16 +67,18 @@ function moveCharacter() {
         const direction = Math.random() < 0.5 ? -1 : 1; // Random direction: left or right
         const distance = Math.random() * 200 + 100; // Random distance: 100-300 pixels
         const newLeft = character.offsetLeft + direction * distance;
+        const duration = distance / 50 * 1000; // Calculate duration based on distance for slower movement
 
         // Ensure character stays within viewport
         if (newLeft > 0 && newLeft < window.innerWidth - character.offsetWidth) {
+            character.style.transition = `left ${duration}ms linear`; // Set transition duration
             character.style.left = `${newLeft}px`;
         }
 
         setTimeout(() => {
             isWalking = false;
             idleCharacter();
-        }, 1000); // Simulate walking duration
+        }, duration); // Wait for the movement to complete
     }
 }
 
@@ -84,6 +90,9 @@ function idleCharacter() {
 
 // Show speech bubble every 15 seconds
 setInterval(showSpeechBubble, 15000);
+
+// Update speech bubble position continuously
+setInterval(updateSpeechBubblePosition, 100);
 
 // Initial call to show speech bubble and start idling
 showSpeechBubble();
