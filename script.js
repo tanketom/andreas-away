@@ -45,7 +45,7 @@ function showSpeechBubble() {
 
 // Function to update speech bubble position
 function updateSpeechBubblePosition() {
-    speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2}px`;
+    speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2 + 8}px`;
     speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
 }
 

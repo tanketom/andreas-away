@@ -21,7 +21,7 @@ body {
 #character.holding-coffee::after {
     content: '☕';
     position: absolute;
-    right: -20px;
+    left: -20px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 30px;
