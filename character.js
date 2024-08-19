@@ -1,55 +1,19 @@
+import { showSpeechBubble, updateSpeechBubblePosition } from './ui.js';
+
 const character = document.getElementById('character');
-const speechBubble = document.getElementById('speech-bubble');
 const coffeeMachine = document.getElementById('coffee-machine');
 const emailBox = document.getElementById('email-box');
-const emailCountElement = document.querySelector('#email-box .email-count');
-let quotes = [];
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
-let emailCount = 0;
 
-// Fetch quotes from quotes.json
-fetch('quotes.json')
-    .then(response => response.json())
-    .then(data => {
-        quotes = data.quotes;
-    })
-    .catch(error => {
-        console.error('Error fetching quotes:', error);
-        speechBubble.textContent = 'Failed to load quotes.';
-        speechBubble.style.display = 'block';
-        setTimeout(() => {
-            speechBubble.style.display = 'none';
-        }, 5000); // Display error message for 5 seconds
-    });
-
-// Set initial position
-character.style.left = "50%";
-character.style.top = "50%";
-character.style.transform = "translate(-50%, -50%)";
-
-// Function to show speech bubble
-function showSpeechBubble() {
-    if (quotes.length > 0) {
-        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        speechBubble.textContent = randomQuote;
-        speechBubble.style.display = 'block';
-        updateSpeechBubblePosition();
-        setTimeout(() => {
-            speechBubble.style.display = 'none';
-        }, 13000); // Display for 13 seconds
-    }
+export function initCharacter() {
+    character.style.left = "50%";
+    character.style.top = "50%";
+    character.style.transform = "translate(-50%, -50%)";
 }
 
-// Function to update speech bubble position
-function updateSpeechBubblePosition() {
-    speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2 + 8}px`;
-    speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
-}
-
-// Function to handle character movement and motivation
-function moveCharacter(target = null) {
+export function moveCharacter(target = null) {
     if (!isWalking) {
         isWalking = true;
         let newLeft, duration;
@@ -82,8 +46,7 @@ function moveCharacter(target = null) {
     }
 }
 
-// Function to handle character idling
-function idleCharacter() {
+export function idleCharacter() {
     const idleTime = Math.random() * 4000 + 3000;
     setTimeout(() => {
         if (hasCoffee) {
@@ -98,30 +61,18 @@ function idleCharacter() {
     }, idleTime);
 }
 
-// Function to get coffee
 const coffeeSound = new Audio('path/to/coffee-sound.mp3');
 
-function getCoffee() {
+export function getCoffee() {
     hasCoffee = true;
     character.classList.add('holding-coffee');
     coffeeSound.play();
-    showCoffeeSpeechBubble();
+    showSpeechBubble('*PSSSHhhhhh*', 3000);
     setTimeout(() => {
         walkWithCoffee();
     }, 15000);
 }
 
-// Function to show speech bubble when getting coffee
-function showCoffeeSpeechBubble() {
-    speechBubble.textContent = '*PSSSHhhhhh*';
-    speechBubble.style.display = 'block';
-    updateSpeechBubblePosition();
-    setTimeout(() => {
-        speechBubble.style.display = 'none';
-    }, 3000);
-}
-
-// Function to handle walking with coffee
 function walkWithCoffee() {
     const walkTime = 30000;
     const startTime = Date.now();
@@ -138,18 +89,13 @@ function walkWithCoffee() {
     walk();
 }
 
-// Function to prepare to drop coffee
 function prepareToDropCoffee() {
-    speechBubble.textContent = 'A damned fine cup of coffee!';
-    speechBubble.style.display = 'block';
-    updateSpeechBubblePosition();
+    showSpeechBubble('A damned fine cup of coffee!', 1000);
     setTimeout(() => {
-        speechBubble.style.display = 'none';
         dropCoffee();
-    }, 1000); // Wait 1 second before dropping the coffee
+    }, 1000);
 }
 
-// Function to handle dropping the coffee cup
 function dropCoffee() {
     if (hasCoffee) {
         const coffeeCup = document.createElement('div');
@@ -171,15 +117,7 @@ function dropCoffee() {
     moveCharacter();
 }
 
-// Function to update email count
-function updateEmailCount() {
-    emailCount += Math.floor(Math.random() * 5) + 1;
-    emailCountElement.textContent = emailCount;
-    setTimeout(updateEmailCount, Math.random() * 25000 + 5000);
-}
-
-// Function to handle emails
-function handleEmails() {
+export function handleEmails() {
     const interval = setInterval(() => {
         if (emailCount > 0) {
             emailCount--;
@@ -190,14 +128,3 @@ function handleEmails() {
         }
     }, 500);
 }
-
-// Show speech bubble every 15 seconds
-setInterval(showSpeechBubble, 15000);
-
-// Update speech bubble position continuously
-setInterval(updateSpeechBubblePosition, 5);
-
-// Initial call to show speech bubble and start idling
-showSpeechBubble();
-idleCharacter();
-updateEmailCount();
