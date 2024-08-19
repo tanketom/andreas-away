@@ -74,7 +74,9 @@ function moveCharacter() {
 function idleCharacter() {
     const idleTime = Math.random() * 4000 + 3000; // Random idle time: 3-7 seconds
     setTimeout(() => {
-        if (Math.random() < 0.3) { // 30% chance to go to coffee machine
+        if (hasCoffee) {
+            putDownCoffee();
+        } else if (Math.random() < 0.3) { // 30% chance to go to coffee machine
             goToCoffeeMachine();
         } else {
             moveCharacter();
@@ -92,6 +94,7 @@ function goToCoffeeMachine() {
 
     setTimeout(() => {
         hasCoffee = true;
+        character.classList.add('holding-coffee');
         idleCharacter();
     }, duration); // Wait for the movement to complete
 }
@@ -106,14 +109,16 @@ function putDownCoffee() {
         coffeeCup.style.top = `${character.offsetTop + character.offsetHeight}px`;
         document.body.appendChild(coffeeCup);
         hasCoffee = false;
+        character.classList.remove('holding-coffee');
     }
+    moveCharacter();
 }
 
 // Show speech bubble every 15 seconds
 setInterval(showSpeechBubble, 15000);
 
 // Update speech bubble position continuously
-setInterval(updateSpeechBubblePosition, 100);
+setInterval(updateSpeechBubblePosition, 5);
 
 // Initial call to show speech bubble and start idling
 showSpeechBubble();
