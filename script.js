@@ -81,6 +81,8 @@ function moveCharacter(target = null) {
                 getCoffee();
             } else if (target === emailBox && character.offsetLeft >= emailBox.offsetLeft && character.offsetLeft <= emailBox.offsetLeft + emailBox.offsetWidth) {
                 handleEmails();
+            } else if (target === plant && character.offsetLeft >= plant.offsetLeft && character.offsetLeft <= plant.offsetLeft + plant.offsetWidth) {
+                waterPlant();
             } else {
                 idleCharacter();
             }
@@ -94,6 +96,13 @@ function idleCharacter() {
     setTimeout(() => {
         if (hasCoffee) {
             prepareToDropCoffee();
+        } else if (timeSinceCoffee > 60 && emailCount > 25) {
+            showTemporaryMessage('Aaaaah! My prioritieees!', 3000);
+            moveCharacter(Math.random() < 0.5 ? coffeeMachine : emailBox);
+        } else if (timeSinceCoffee > 60) {
+            moveCharacter(coffeeMachine);
+        } else if (emailCount > 25) {
+            moveCharacter(emailBox);
         } else if (Math.random() < 0.3) {
             moveCharacter(coffeeMachine);
         } else if (emailCount > 0 && Math.random() < 0.5) {
@@ -108,6 +117,7 @@ function idleCharacter() {
 function getCoffee() {
     hasCoffee = true;
     character.classList.add('holding-coffee');
+    character.classList.remove('needs-coffee');
     showTemporaryMessage('*PSSSHhhhhh*', 3000);
     setTimeout(() => {
         walkWithCoffee();
@@ -166,6 +176,11 @@ function dropCoffee() {
 function updateTimeSinceCoffee() {
     timeSinceCoffee++;
     timeSinceCoffeeElement.textContent = `Time since last coffee: ${timeSinceCoffee}`;
+    if (timeSinceCoffee > 60) {
+        character.classList.add('needs-coffee');
+    } else {
+        character.classList.remove('needs-coffee');
+    }
 }
 
 // Function to reset coffee timer
@@ -179,6 +194,11 @@ function resetCoffeeTimer() {
 function updateEmailCount() {
     emailCount += Math.floor(Math.random() * 5) + 1;
     emailCountElement.textContent = emailCount;
+    if (emailCount > 25) {
+        character.classList.add('needs-emails');
+    } else {
+        character.classList.remove('needs-emails');
+    }
     setTimeout(updateEmailCount, Math.random() * 25000 + 5000);
 }
 
@@ -190,6 +210,9 @@ function handleEmails() {
             emailsRead++;
             emailCountElement.textContent = emailCount;
             emailsReadElement.textContent = `E-mails read: ${emailsRead}`;
+            if (emailCount <= 25) {
+                character.classList.remove('needs-emails');
+            }
         } else {
             clearInterval(interval);
             idleCharacter();
