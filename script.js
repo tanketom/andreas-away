@@ -63,7 +63,7 @@ function moveCharacter() {
 
         // Ensure character stays within viewport and doesn't go past coffee machine
         if (newLeft > 0 && newLeft < coffeeMachine.offsetLeft + coffeeMachine.offsetWidth - character.offsetWidth) {
-            character.style.transition = `left ${duration}ms linear`; // Set transition duration
+            character.style.transition = `left ${duration}ms ease-in-out`; // Set transition duration
             character.style.left = `${newLeft}px`;
         }
 
@@ -89,16 +89,19 @@ function idleCharacter() {
 }
 
 // Function to handle going to coffee machine
+const coffeeSound = new Audio('path/to/coffee-sound.mp3'); // Add the path to your sound file
+
 function goToCoffeeMachine() {
     const coffeeMachineLeft = coffeeMachine.offsetLeft + coffeeMachine.offsetWidth;
     const duration = Math.abs(coffeeMachineLeft - character.offsetLeft) / 50 * 1000; // Calculate duration based on distance
 
-    character.style.transition = `left ${duration}ms linear`; // Set transition duration
+    character.style.transition = `left ${duration}ms ease-in-out`; // Set transition duration
     character.style.left = `${coffeeMachineLeft}px`;
 
     setTimeout(() => {
         hasCoffee = true;
         character.classList.add('holding-coffee');
+        coffeeSound.play(); // Play sound effect
         showCoffeeSpeechBubble(); // Show speech bubble when getting coffee
         setTimeout(() => {
             walkWithCoffee();
@@ -182,7 +185,7 @@ function moveToEmailBox() {
     const emailBoxLeft = emailBox.offsetLeft;
     const duration = Math.abs(emailBoxLeft - character.offsetLeft) / 50 * 1000; // Calculate duration based on distance
 
-    character.style.transition = `left ${duration}ms linear`; // Set transition duration
+    character.style.transition = `left ${duration}ms ease-in-out`; // Set transition duration
     character.style.left = `${emailBoxLeft}px`;
 
     setTimeout(() => {
