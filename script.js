@@ -179,4 +179,33 @@ function checkEmailUrgency() {
 
 // Function to move character to email box
 function moveToEmailBox() {
-    const emailBox
+    const emailBoxLeft = emailBox.offsetLeft;
+    const duration = Math.abs(emailBoxLeft - character.offsetLeft) / 50 * 1000; // Calculate duration based on distance
+
+    character.style.transition = `left ${duration}ms linear`; // Set transition duration
+    character.style.left = `${emailBoxLeft}px`;
+
+    setTimeout(() => {
+        const interval = setInterval(() => {
+            if (emailCount > 0) {
+                emailCount--;
+                emailCountElement.textContent = emailCount;
+            } else {
+                clearInterval(interval);
+                idleCharacter();
+            }
+        }, 500); // Decrease email count every 0.5 seconds
+    }, duration); // Wait for the movement to complete
+}
+
+// Show speech bubble every 15 seconds
+setInterval(showSpeechBubble, 15000);
+
+// Update speech bubble position continuously
+setInterval(updateSpeechBubblePosition, 5);
+
+// Initial call to show speech bubble and start idling
+showSpeechBubble();
+idleCharacter();
+updateEmailCount();
+checkEmailUrgency();
