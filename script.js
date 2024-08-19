@@ -3,7 +3,6 @@ const speechBubble = document.getElementById('speech-bubble');
 let quotes = [];
 let idle = true;
 let targetX = window.innerWidth / 2;
-let moving = false;
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -13,6 +12,13 @@ fetch('quotes.json')
     })
     .catch(error => console.error('Error fetching quotes:', error));
 
+// Set initial idle animation and position
+character.style.backgroundPosition = "0 0"; // Idle frame
+character.style.left = "50%";
+character.style.top = "50%";
+character.style.transform = "translate(-50%, -50%)";
+
+// Function to move character
 function moveCharacter() {
     const currentX = character.offsetLeft;
     const step = 5; // Step size for movement
@@ -45,6 +51,7 @@ function moveCharacter() {
     setTimeout(moveCharacter, idle ? 5000 : 50); // Adjust timing based on idle state
 }
 
+// Function to show speech bubble
 function showSpeechBubble() {
     if (quotes.length > 0) {
         // Select a random quote
@@ -62,23 +69,18 @@ function showSpeechBubble() {
     }
 }
 
+// Function to set random walk target
 function randomWalk() {
-    if (!moving) {
+    if (idle) {
         idle = false;
-        targetX = Math.random() * (window.innerWidth - character.offsetWidth); // Set random targetX
-        moving = true;
+        const direction = Math.random() < 0.5 ? -1 : 1; // Randomly choose left or right
+        targetX = character.offsetLeft + direction * (Math.random() * 200 + 100); // Move 100-300px left or right
+        targetX = Math.max(0, Math.min(targetX, window.innerWidth - character.offsetWidth)); // Ensure targetX is within bounds
     }
 }
 
 // Show speech bubble every 30 seconds
 setInterval(showSpeechBubble, 30000);
-
-// Random walk every 5 seconds
-setInterval(() => {
-    if (!moving) {
-        randomWalk();
-    }
-}, 5000);
 
 // Start character movement
 moveCharacter();
