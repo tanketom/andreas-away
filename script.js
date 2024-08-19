@@ -22,6 +22,7 @@ fetch('quotes.json')
 character.style.left = "50%";
 character.style.top = "50%";
 character.style.transform = "translate(-50%, -50%)";
+character.style.transition = "left 1s"; // Add transition for smooth movement
 
 // Function to show speech bubble
 function showSpeechBubble() {

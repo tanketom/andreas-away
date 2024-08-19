@@ -16,6 +16,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: left 1s; /* Smooth movement */
 }
 
 #speech-bubble {
