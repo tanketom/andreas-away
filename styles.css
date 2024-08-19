@@ -93,7 +93,7 @@ header, main, footer {
 #email-box {
     position: absolute;
     width: 30%;
-    height: 16.875%; /* 16:9 aspect ratio */
+    height: calc(30% * 10 / 16); /* Maintain 16:10 aspect ratio */
     background-color: #f0f0f0;
     border: 2px solid #333;
     border-radius: 0.3125rem; /* 5px */
@@ -132,7 +132,7 @@ header, main, footer {
         transform: translateY(-50%);
     }
     100% {
-        top: calc(100vh - 30px); /* Adjust to stop at the bottom of the screen */
+        top: calc(50% + 6.9375rem); /* Adjust to stop just below the character */
         transform: translateY(0);
     }
 }
