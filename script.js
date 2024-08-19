@@ -3,11 +3,16 @@ const speechBubble = document.getElementById('speech-bubble');
 const coffeeMachine = document.getElementById('coffee-machine');
 const emailBox = document.getElementById('email-box');
 const emailCountElement = document.querySelector('#email-box .email-count');
+const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
+const emailsReadElement = document.getElementById('emails-read');
 let quotes = [];
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
 let emailCount = 0;
+let timeSinceCoffee = 0;
+let emailsRead = 0;
+let coffeeTimer;
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -152,8 +157,22 @@ function dropCoffee() {
 
         hasCoffee = false;
         character.classList.remove('holding-coffee');
+        resetCoffeeTimer(); // Reset the coffee timer
     }
     moveCharacter();
+}
+
+// Function to update time since last coffee
+function updateTimeSinceCoffee() {
+    timeSinceCoffee++;
+    timeSinceCoffeeElement.textContent = `Time since last coffee: ${timeSinceCoffee}`;
+}
+
+// Function to reset coffee timer
+function resetCoffeeTimer() {
+    clearInterval(coffeeTimer);
+    timeSinceCoffee = 0;
+    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
 }
 
 // Function to update email count
@@ -168,7 +187,9 @@ function handleEmails() {
     const interval = setInterval(() => {
         if (emailCount > 0) {
             emailCount--;
+            emailsRead++;
             emailCountElement.textContent = emailCount;
+            emailsReadElement.textContent = `E-mails read: ${emailsRead}`;
         } else {
             clearInterval(interval);
             idleCharacter();
@@ -186,3 +207,6 @@ setInterval(updateSpeechBubblePosition, 5);
 showSpeechBubble();
 idleCharacter();
 updateEmailCount();
+
+// Initialize coffee timer
+coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
