@@ -1,28 +1,42 @@
 const character = document.getElementById('character');
 const speechBubble = document.getElementById('speech-bubble');
-const quotes = [
-    "Hello there!",
-    "How's it going?",
-    "I'll be back soon.",
-    "Stay tuned!"
-];
+const characterContainer = document.getElementById('character-container');
+let quotes = [];
+let idle = true;
 
-let position = 0;
-const speed = 2;
+// Fetch quotes from quotes.json
+fetch('quotes.json')
+    .then(response => response.json())
+    .then(data => {
+        quotes = data.quotes;
+    })
+    .catch(error => console.error('Error fetching quotes:', error));
 
 function moveCharacter() {
-    position += speed;
-    character.style.left = `${position % window.innerWidth}px`;
-    requestAnimationFrame(moveCharacter);
+    if (idle) {
+        character.style.backgroundImage = "url('gfx/idle.gif')";
+    } else {
+        character.style.backgroundImage = "url('gfx/walk.gif')";
+        const randomX = Math.random() * (window.innerWidth - character.offsetWidth);
+        const randomY = Math.random() * (window.innerHeight - character.offsetHeight);
+        character.style.left = `${randomX}px`;
+        character.style.top = `${randomY}px`;
+    }
+    idle = !idle;
+    setTimeout(moveCharacter, idle ? 3000 : 1000);
 }
 
 function showSpeechBubble() {
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    speechBubble.textContent = randomQuote;
-    speechBubble.style.display = 'block';
-    setTimeout(() => {
-        speechBubble.style.display = 'none';
-    }, 3000);
+    if (quotes.length > 0) {
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        speechBubble.textContent = randomQuote;
+        speechBubble.style.display = 'block';
+        speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2}px`;
+        speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
+        setTimeout(() => {
+            speechBubble.style.display = 'none';
+        }, 3000);
+    }
 }
 
 setInterval(showSpeechBubble, 60000);
