@@ -1,50 +1,20 @@
-import { showSpeechBubble, updateSpeechBubblePosition } from './ui.js';
+import { showTemporaryMessage, updateSpeechBubblePosition } from './ui.js';
+import { resetCoffeeTimer, updateEmailCount } from './timers.js';
 
 const character = document.getElementById('character');
 const coffeeMachine = document.getElementById('coffee-machine');
 const emailBox = document.getElementById('email-box');
+
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
-let emailCount = 0; // Ensure emailCount is defined here
+let emailCount = 0;
+let timeSinceCoffee = 0;
 
-export function initCharacter() {
+export function setInitialPosition() {
     character.style.left = "50%";
     character.style.top = "50%";
     character.style.transform = "translate(-50%, -50%)";
-}
-
-export function moveCharacter(target = null) {
-    if (!isWalking) {
-        isWalking = true;
-        let newLeft, duration;
-
-        if (target) {
-            newLeft = target.offsetLeft + (target === coffeeMachine ? target.offsetWidth : 0);
-            duration = Math.abs(newLeft - character.offsetLeft) / 50 * 1000;
-        } else {
-            const direction = Math.random() < 0.5 ? -1 : 1;
-            const distance = Math.random() * 200 + 100;
-            newLeft = character.offsetLeft + direction * distance;
-            duration = distance / 50 * 1000;
-        }
-
-        if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
-            character.style.transition = `left ${duration}ms ease-in-out`;
-            character.style.left = `${newLeft}px`;
-        }
-
-        setTimeout(() => {
-            isWalking = false;
-            if (target === coffeeMachine && character.offsetLeft >= coffeeMachine.offsetLeft && character.offsetLeft <= coffeeMachine.offsetLeft + coffeeMachine.offsetWidth) {
-                getCoffee();
-            } else if (target === emailBox && character.offsetLeft >= emailBox.offsetLeft && character.offsetLeft <= emailBox.offsetLeft + emailBox.offsetWidth) {
-                handleEmails();
-            } else {
-                idleCharacter();
-            }
-        }, duration);
-    }
 }
 
 export function idleCharacter() {
@@ -52,6 +22,13 @@ export function idleCharacter() {
     setTimeout(() => {
         if (hasCoffee) {
             prepareToDropCoffee();
+        } else if (timeSinceCoffee > 60 && emailCount > 25) {
+            showTemporaryMessage('Aaaaah! My prioritieees!', 3000);
+            moveCharacter(Math.random() < 0.5 ? coffeeMachine : emailBox);
+        } else if (timeSinceCoffee > 60) {
+            moveCharacter(coffeeMachine);
+        } else if (emailCount > 25) {
+            moveCharacter(emailBox);
         } else if (Math.random() < 0.3) {
             moveCharacter(coffeeMachine);
         } else if (emailCount > 0 && Math.random() < 0.5) {
@@ -62,16 +39,53 @@ export function idleCharacter() {
     }, idleTime);
 }
 
-const coffeeSound = new Audio('assets/sounds/coffee-sound.mp3');
+export function moveCharacter(target = null) {
+    if (isWalking) return;
 
-export function getCoffee() {
+    isWalking = true;
+    let newLeft, duration;
+
+    if (target) {
+        newLeft = target.offsetLeft + (target === coffeeMachine ? target.offsetWidth : 0);
+        duration = Math.abs(newLeft - character.offsetLeft) / 50 * 1000;
+    } else {
+        const direction = Math.random() < 0.5 ? -1 : 1;
+        const distance = Math.random() * 200 + 100;
+        newLeft = character.offsetLeft + direction * distance;
+        duration = distance / 50 * 1000;
+    }
+
+    if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
+        character.style.transition = `left ${duration}ms ease-in-out`;
+        character.style.left = `${newLeft}px`;
+    }
+
+    setTimeout(() => {
+        isWalking = false;
+        if (target) {
+            handleTargetInteraction(target);
+        } else {
+            idleCharacter();
+        }
+    }, duration);
+}
+
+function handleTargetInteraction(target) {
+    if (target === coffeeMachine) {
+        getCoffee();
+    } else if (target === emailBox) {
+        handleEmails();
+    } else {
+        idleCharacter();
+    }
+}
+
+function getCoffee() {
     hasCoffee = true;
     character.classList.add('holding-coffee');
-    coffeeSound.play();
-    showSpeechBubble('*PSSSHhhhhh*', 3000);
-    setTimeout(() => {
-        walkWithCoffee();
-    }, 15000);
+    character.classList.remove('needs-coffee');
+    showTemporaryMessage('*PSSSHhhhhh*', 3000);
+    setTimeout(walkWithCoffee, 15000);
 }
 
 function walkWithCoffee() {
@@ -91,10 +105,8 @@ function walkWithCoffee() {
 }
 
 function prepareToDropCoffee() {
-    showSpeechBubble('A damned fine cup of coffee!', 1000);
-    setTimeout(() => {
-        dropCoffee();
-    }, 1000);
+    showTemporaryMessage('A damned fine cup of coffee!', 1000);
+    setTimeout(dropCoffee, 1000);
 }
 
 function dropCoffee() {
@@ -102,7 +114,7 @@ function dropCoffee() {
         const coffeeCup = document.createElement('div');
         coffeeCup.textContent = '☕';
         coffeeCup.classList.add('coffee-cup');
-        coffeeCup.style.left = `${character.offsetLeft}px`;
+        coffeeCup.style.left = `${character.offsetLeft + character.offsetWidth / 2 - 15}px`;
         coffeeCup.style.top = `${character.offsetTop + character.offsetHeight}px`;
         document.body.appendChild(coffeeCup);
         coffeeCups.push(coffeeCup);
@@ -114,18 +126,7 @@ function dropCoffee() {
 
         hasCoffee = false;
         character.classList.remove('holding-coffee');
+        resetCoffeeTimer();
     }
     moveCharacter();
-}
-
-export function handleEmails() {
-    const interval = setInterval(() => {
-        if (emailCount > 0) {
-            emailCount--;
-            emailCountElement.textContent = emailCount;
-        } else {
-            clearInterval(interval);
-            idleCharacter();
-        }
-    }, 500);
 }
