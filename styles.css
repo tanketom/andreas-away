@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     height: 100vh;
     position: relative;
+    background-color: lightgray; /* Set background to light gray */
 }
 
 #character {
@@ -68,4 +69,25 @@ body {
     color: white;
     text-align: center;
     padding: 10px;
+}
+
+/* New styles for the white box */
+#email-box {
+    position: absolute;
+    width: 30%;
+    height: 16.875%; /* 16:9 aspect ratio */
+    background-color: white;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 2px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+}
+
+#email-box .email-count {
+    color: red;
+    margin-left: 10px;
 }

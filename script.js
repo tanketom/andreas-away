@@ -1,10 +1,13 @@
 const character = document.getElementById('character');
 const speechBubble = document.getElementById('speech-bubble');
 const coffeeMachine = document.getElementById('coffee-machine');
+const emailBox = document.getElementById('email-box');
+const emailCountElement = document.querySelector('#email-box .email-count');
 let quotes = [];
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
+let emailCount = 0;
 
 // Fetch quotes from quotes.json
 fetch('quotes.json')
@@ -58,8 +61,8 @@ function moveCharacter() {
         const newLeft = character.offsetLeft + direction * distance;
         const duration = distance / 50 * 1000; // Calculate duration based on distance for slower movement
 
-        // Ensure character stays within viewport
-        if (newLeft > 0 && newLeft < window.innerWidth - character.offsetWidth) {
+        // Ensure character stays within viewport and doesn't go past coffee machine
+        if (newLeft > 0 && newLeft < coffeeMachine.offsetLeft + coffeeMachine.offsetWidth - character.offsetWidth) {
             character.style.transition = `left ${duration}ms linear`; // Set transition duration
             character.style.left = `${newLeft}px`;
         }
@@ -153,12 +156,27 @@ function putDownCoffee() {
     moveCharacter();
 }
 
-// Show speech bubble every 15 seconds
-setInterval(showSpeechBubble, 15000);
+// Function to update email count
+function updateEmailCount() {
+    emailCount += Math.floor(Math.random() * 5) + 1; // Increase by 1-5
+    emailCountElement.textContent = emailCount;
+    setTimeout(updateEmailCount, Math.random() * 25000 + 5000); // Update every 5-30 seconds
+}
 
-// Update speech bubble position continuously
-setInterval(updateSpeechBubblePosition, 5);
+// Function to handle character's urgency to get to email box
+function checkEmailUrgency() {
+    if (emailCount > 0) {
+        const distanceToEmailBox = Math.abs(emailBox.offsetLeft - character.offsetLeft);
+        const urgency = Math.min(emailCount / 10, 1); // Scale urgency based on email count
+        const moveChance = urgency * 0.5; // 50% chance at max urgency
 
-// Initial call to show speech bubble and start idling
-showSpeechBubble();
-idleCharacter();
+        if (Math.random() < moveChance) {
+            moveToEmailBox();
+        }
+    }
+    setTimeout(checkEmailUrgency, 1000); // Check every second
+}
+
+// Function to move character to email box
+function moveToEmailBox() {
+    const emailBox
