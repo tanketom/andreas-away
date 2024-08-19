@@ -27,10 +27,8 @@ function moveCharacter() {
         // Move character towards targetX
         if (currentX < targetX) {
             character.style.left = `${currentX + step}px`;
-            character.style.transform = "translate(-50%, -50%) scaleX(1)"; // Facing right
         } else if (currentX > targetX) {
             character.style.left = `${currentX - step}px`;
-            character.style.transform = "translate(-50%, -50%) scaleX(-1)"; // Facing left
         } else {
             idle = true; // Stop moving when target is reached
             setTimeout(() => {
@@ -71,13 +69,6 @@ function randomWalk() {
         moving = true;
     }
 }
-
-// Event listener for mouse click to set targetX
-document.addEventListener('click', (event) => {
-    idle = false;
-    targetX = event.clientX - character.offsetWidth / 2;
-    moving = true;
-});
 
 // Show speech bubble every 30 seconds
 setInterval(showSpeechBubble, 30000);
