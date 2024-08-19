@@ -6,7 +6,11 @@ const emailCountElement = document.querySelector('#email-box .email-count');
 const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
 const emailsReadElement = document.getElementById('emails-read');
 
-let quotes = [];
+let quotes = {
+    general: [],
+    coffee: [],
+    email: []
+};
 let isWalking = false;
 let hasCoffee = false;
 let coffeeCups = [];
@@ -56,10 +60,41 @@ function initializeTimers() {
 
 // Function to show speech bubble
 function showSpeechBubble() {
-    if (quotes.length > 0) {
-        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    const context = getContext();
+    const contextQuotes = getQuotesForContext(context);
+    if (contextQuotes.length > 0) {
+        const randomQuote = contextQuotes[Math.floor(Math.random() * contextQuotes.length)];
         showTemporaryMessage(randomQuote, 13000);
     }
+}
+
+// Function to get context based on character's position
+function getContext() {
+    const characterRect = character.getBoundingClientRect();
+    const coffeeMachineRect = coffeeMachine.getBoundingClientRect();
+    const emailBoxRect = emailBox.getBoundingClientRect();
+
+    if (isNear(characterRect, coffeeMachineRect)) {
+        return 'coffee';
+    } else if (isNear(characterRect, emailBoxRect)) {
+        return 'email';
+    } else {
+        return 'general';
+    }
+}
+
+// Function to check if character is near a target
+function isNear(characterRect, targetRect) {
+    const distance = Math.hypot(
+        characterRect.left - targetRect.left,
+        characterRect.top - targetRect.top
+    );
+    return distance < 100; // Adjust this value as needed
+}
+
+// Function to get quotes for the given context
+function getQuotesForContext(context) {
+    return quotes[context] || quotes['general'];
 }
 
 // Function to show temporary message in speech bubble
@@ -244,5 +279,20 @@ function handleEmails() {
             clearInterval(interval);
             idleCharacter();
         }
-    }, 200);
+    }, 300); // Adjusted interval to 300 milliseconds
 }
+
+
+// Show speech bubble every 15 seconds
+setInterval(showSpeechBubble, 15000);
+
+// Update speech bubble position continuously
+setInterval(updateSpeechBubblePosition, 5);
+
+// Initial call to show speech bubble and start idling
+showSpeechBubble();
+idleCharacter();
+updateEmailCount();
+
+// Initialize coffee timer
+coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
