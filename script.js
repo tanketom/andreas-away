@@ -4,6 +4,8 @@ const coffeeMachine = document.getElementById('coffee-machine');
 const emailBox = document.getElementById('email-box');
 const emailCountElement = document.querySelector('#email-box .email-count');
 const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
+const arriveButton = document.getElementById('arrive-button');
+const leaveButton = document.getElementById('leave-button');
 
 let quotes = {
     general: [],
@@ -16,6 +18,7 @@ let coffeeCups = [];
 let emailCount = 0;
 let timeSinceCoffee = 0;
 let coffeeTimer;
+let officeHours = { start: 8.5, end: 15.5 }; // 8:30 to 15:30
 
 // Fetch quotes from quotes.json
 fetchQuotes();
@@ -25,6 +28,10 @@ setInitialPosition();
 
 // Initialize timers and intervals
 initializeTimers();
+
+// Add event listeners for buttons
+arriveButton.addEventListener('click', arriveAtOffice);
+leaveButton.addEventListener('click', leaveOffice);
 
 // Function to fetch quotes
 function fetchQuotes() {
@@ -41,19 +48,20 @@ function fetchQuotes() {
 
 // Function to set initial position
 function setInitialPosition() {
-    character.style.left = "50%";
+    character.style.left = "-100px"; // Start off-screen
     character.style.top = "50%";
-    character.style.transform = "translate(-50%, -50%)";
+    character.style.transform = "translateY(-50%)";
 }
 
-// Initialize timers and intervals
+// Function to initialize timers and intervals
 function initializeTimers() {
     setInterval(showSpeechBubble, 15000);
     setInterval(updateSpeechBubblePosition, 5);
-    setTimeout(updateEmailCount, Math.random() * 25000 + 5000); // Only call once here
+    setTimeout(updateEmailCount, Math.random() * 25000 + 5000);
     coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
     showSpeechBubble();
     idleCharacter();
+    checkOfficeHours();
 }
 
 // Function to show speech bubble
@@ -247,6 +255,7 @@ function updateTimeSinceCoffee() {
 function resetCoffeeTimer() {
     clearInterval(coffeeTimer);
     timeSinceCoffee = 0;
+    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
 }
 
 // Function to update email count
@@ -283,6 +292,38 @@ function handleEmails() {
             }, 5000);
         }
     }, 300); // Adjusted interval to 300 milliseconds
+}
+
+// Function to check office hours and animate arrival/departure
+function checkOfficeHours() {
+    const now = new Date();
+    const currentHour = now.getHours() + now.getMinutes() / 60;
+
+    if (currentHour >= officeHours.start && currentHour < officeHours.end) {
+        arriveAtOffice();
+    } else {
+        leaveOffice();
+    }
+
+    // Check every minute
+    setTimeout(checkOfficeHours, 60000);
+}
+
+// Function to animate arrival at office
+function arriveAtOffice() {
+    character.style.transition = 'left 2s ease-in-out';
+    character.style.left = '50%';
+    character.style.transform = 'translate(-50%, -50%)';
+    setTimeout(() => {
+        idleCharacter();
+    }, 2000);
+}
+
+// Function to animate leaving the office
+function leaveOffice() {
+    character.style.transition = 'left 2s ease-in-out';
+    character.style.left = '100%';
+    character.style.transform = 'translateY(-50%)';
 }
 
 // Show speech bubble every 15 seconds
