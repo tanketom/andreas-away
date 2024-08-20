@@ -192,5 +192,15 @@ header, main, footer {
 }
 
 #time-since-coffee {
-    display: none;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem;
+    border-radius: 0.3125rem; /* 5px */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    z-index: 5;
+    font-size: 1rem; /* Adjust font size as needed */
+    text-align: center;
 }

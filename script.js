@@ -4,7 +4,6 @@ const coffeeMachine = document.getElementById('coffee-machine');
 const emailBox = document.getElementById('email-box');
 const emailCountElement = document.querySelector('#email-box .email-count');
 const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
-const footer = document.getElementById('footer');
 
 let quotes = {
     general: [],
@@ -26,9 +25,6 @@ setInitialPosition();
 
 // Initialize timers and intervals
 initializeTimers();
-
-// Add Debug button
-addDebugButton();
 
 // Function to fetch quotes
 function fetchQuotes() {
@@ -129,7 +125,7 @@ function moveCharacter(target = null) {
         const direction = Math.random() < 0.5 ? -1 : 1;
         const distance = Math.random() * 200 + 100;
         newLeft = character.offsetLeft + direction * distance;
-        duration = distance / 50 * 1000;
+        duration = distance / 50 * 0;
     }
 
     if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
@@ -239,6 +235,7 @@ function dropCoffee() {
 // Function to update time since last coffee
 function updateTimeSinceCoffee() {
     timeSinceCoffee++;
+    timeSinceCoffeeElement.textContent = `Time since last coffee: ${timeSinceCoffee}`;
     if (timeSinceCoffee > 80) {
         character.classList.add('needs-coffee');
     } else {
@@ -279,24 +276,6 @@ function handleEmails() {
             idleCharacter();
         }
     }, 300); // Adjusted interval to 300 milliseconds
-}
-
-// Function to add Debug button
-function addDebugButton() {
-    const debugButton = document.createElement('button');
-    debugButton.textContent = 'Debug';
-    debugButton.style.position = 'absolute';
-    debugButton.style.bottom = '1rem';
-    debugButton.style.right = '1rem';
-    footer.appendChild(debugButton);
-
-    debugButton.addEventListener('click', () => {
-        if (timeSinceCoffeeElement.style.display === 'none' || !timeSinceCoffeeElement.style.display) {
-            timeSinceCoffeeElement.style.display = 'block';
-        } else {
-            timeSinceCoffeeElement.style.display = 'none';
-        }
-    });
 }
 
 // Show speech bubble every 15 seconds
