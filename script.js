@@ -46,12 +46,12 @@ function setInitialPosition() {
     character.style.transform = "translate(-50%, -50%)";
 }
 
-// Function to initialize timers and intervals
+// Initialize timers and intervals
 function initializeTimers() {
     setInterval(showSpeechBubble, 15000);
     setInterval(updateSpeechBubblePosition, 5);
-    setInterval(updateEmailCount, Math.random() * 25000 + 5000);
-    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000); // Ensure this is only set once
+    setTimeout(updateEmailCount, Math.random() * 25000 + 5000); // Only call once here
+    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
     showSpeechBubble();
     idleCharacter();
 }

@@ -119,6 +119,7 @@ header, main, footer {
     color: white;
     text-align: center;
     padding: 0.625rem; /* 10px */
+    position: relative;
 }
 
 #email-box {
@@ -205,4 +206,26 @@ header, main, footer {
 #stats div {
     font-size: 1.25rem; /* 20px */
     color: #333;
+}
+
+#bike {
+    position: absolute;
+    font-size: 60px;
+    bottom: 10%;
+    right: 10%;
+    z-index: 1;
+}
+
+#arrive-button, #leave-button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #743a9c;
+    color: white;
+    border: none;
+    border-radius: 0.3125rem; /* 5px */
+    cursor: pointer;
+}
+
+#arrive-button:hover, #leave-button:hover {
+    background-color: #5a2d7a;
 }
