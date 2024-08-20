@@ -4,7 +4,7 @@ const coffeeMachine = document.getElementById('coffee-machine');
 const emailBox = document.getElementById('email-box');
 const emailCountElement = document.querySelector('#email-box .email-count');
 const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
-const emailsReadElement = document.getElementById('emails-read');
+const footer = document.getElementById('footer');
 
 let quotes = {
     general: [],
@@ -16,7 +16,6 @@ let hasCoffee = false;
 let coffeeCups = [];
 let emailCount = 0;
 let timeSinceCoffee = 0;
-let emailsRead = 0;
 let coffeeTimer;
 
 // Fetch quotes from quotes.json
@@ -27,6 +26,9 @@ setInitialPosition();
 
 // Initialize timers and intervals
 initializeTimers();
+
+// Add Debug button
+addDebugButton();
 
 // Function to fetch quotes
 function fetchQuotes() {
@@ -162,10 +164,10 @@ function idleCharacter() {
     setTimeout(() => {
         if (hasCoffee) {
             prepareToDropCoffee();
-        } else if (timeSinceCoffee > 60 && emailCount > 25) {
+        } else if (timeSinceCoffee > 80 && emailCount > 25) {
             showTemporaryMessage('Aaaaah! My prioritieees!', 3000);
             moveCharacter(Math.random() < 0.5 ? coffeeMachine : emailBox);
-        } else if (timeSinceCoffee > 60) {
+        } else if (timeSinceCoffee > 80) {
             moveCharacter(coffeeMachine);
         } else if (emailCount > 25) {
             moveCharacter(emailBox);
@@ -237,8 +239,7 @@ function dropCoffee() {
 // Function to update time since last coffee
 function updateTimeSinceCoffee() {
     timeSinceCoffee++;
-    timeSinceCoffeeElement.textContent = `Time since last coffee: ${timeSinceCoffee}`;
-    if (timeSinceCoffee > 60) {
+    if (timeSinceCoffee > 80) {
         character.classList.add('needs-coffee');
     } else {
         character.classList.remove('needs-coffee');
@@ -254,7 +255,7 @@ function resetCoffeeTimer() {
 
 // Function to update email count
 function updateEmailCount() {
-    emailCount += Math.floor(Math.random() * 2) + 1;
+    emailCount += 1;
     emailCountElement.textContent = emailCount;
     if (emailCount > 25) {
         character.classList.add('needs-emails');
@@ -269,9 +270,7 @@ function handleEmails() {
     const interval = setInterval(() => {
         if (emailCount > 0) {
             emailCount--;
-            emailsRead++;
             emailCountElement.textContent = emailCount;
-            emailsReadElement.textContent = `E-mails read: ${emailsRead}`;
             if (emailCount <= 25) {
                 character.classList.remove('needs-emails');
             }
@@ -282,6 +281,23 @@ function handleEmails() {
     }, 300); // Adjusted interval to 300 milliseconds
 }
 
+// Function to add Debug button
+function addDebugButton() {
+    const debugButton = document.createElement('button');
+    debugButton.textContent = 'Debug';
+    debugButton.style.position = 'absolute';
+    debugButton.style.bottom = '1rem';
+    debugButton.style.right = '1rem';
+    footer.appendChild(debugButton);
+
+    debugButton.addEventListener('click', () => {
+        if (timeSinceCoffeeElement.style.display === 'none' || !timeSinceCoffeeElement.style.display) {
+            timeSinceCoffeeElement.style.display = 'block';
+        } else {
+            timeSinceCoffeeElement.style.display = 'none';
+        }
+    });
+}
 
 // Show speech bubble every 15 seconds
 setInterval(showSpeechBubble, 15000);

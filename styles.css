@@ -174,21 +174,23 @@ header, main, footer {
     animation: dropCoffee 1s forwards;
 }
 
-#stats {
+#debug-button {
     position: absolute;
     bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 2rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 0.625rem; /* 10px */
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #743a9c;
+    color: white;
+    border: none;
     border-radius: 0.3125rem; /* 5px */
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-    z-index: 5;
+    cursor: pointer;
+    z-index: 6;
 }
 
-#stats div {
-    font-size: 1.25rem; /* 20px */
-    color: #333;
+#debug-button:hover {
+    background-color: #5a2d7a;
+}
+
+#time-since-coffee {
+    display: none;
 }
