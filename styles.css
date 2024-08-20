@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body {
     margin: 0;
     overflow: hidden;
@@ -5,17 +7,20 @@ body {
     flex-direction: column;
     height: 100vh;
     position: relative;
-    background-color: lightgray;
+    background-color: #f0f0f0;
+    font-family: 'Roboto', sans-serif;
 }
 
 header, main, footer {
     padding: 1rem;
+    background-color: #743a9c;
+    color: white;
 }
 
 #character {
     width: 4.3125rem; /* 69px */
     height: 6.9375rem; /* 111px */
-    background-color: #743a9c;
+    background-color: #9c743a;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -62,7 +67,7 @@ header, main, footer {
 
 #speech-bubble {
     position: absolute;
-    background-color: white;
+    background-color: #3a9c74;
     border: 1px solid black;
     padding: 0.625rem; /* 10px */
     display: none;
@@ -72,20 +77,10 @@ header, main, footer {
     z-index: 3;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
 #coffee-machine {
     width: 6.25rem; /* 100px */
     height: 12.5rem; /* 200px */
-    background-color: black;
+    background-color: #3a9c74;
     position: absolute;
     left: 1.25rem; /* 20px */
     top: 50%;
@@ -101,7 +96,7 @@ header, main, footer {
 
 #footer {
     margin-top: auto;
-    background-color: #333;
+    background-color: #743a9c;
     color: white;
     text-align: center;
     padding: 0.625rem; /* 10px */
@@ -143,35 +138,6 @@ header, main, footer {
     color: red;
     margin-left: 0.625rem; /* 10px */
     animation: bounce 1s;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-1.875rem); /* 30px */
-    }
-    60% {
-        transform: translateY(-0.9375rem); /* 15px */
-    }
-}
-
-@keyframes dropCoffee {
-    0% {
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    100% {
-        top: calc(50% + 6.9375rem); /* Adjust to stop just below the character */
-        transform: translateY(0);
-    }
-}
-
-.coffee-cup {
-    position: absolute;
-    font-size: 1.875rem; /* 30px */
-    animation: dropCoffee 1s forwards;
 }
 
 #stats {
