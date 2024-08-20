@@ -6,6 +6,7 @@ const emailCountElement = document.querySelector('#email-box .email-count');
 const timeSinceCoffeeElement = document.getElementById('time-since-coffee');
 const arriveButton = document.getElementById('arrive-button');
 const leaveButton = document.getElementById('leave-button');
+const bike = document.getElementById('bike');
 
 let quotes = {
     general: [],
@@ -306,24 +307,46 @@ function checkOfficeHours() {
     }
 
     // Check every minute
-    setTimeout(checkOfficeHours, 60000);
+    setTimeout(checkOfficeHours, 1800000);
 }
 
 // Function to animate arrival at office
 function arriveAtOffice() {
-    character.style.transition = 'left 2s ease-in-out';
-    character.style.left = '50%';
-    character.style.transform = 'translate(-50%, -50%)';
+    bike.style.display = 'block';
+    bike.style.left = '100%';
+    bike.style.transition = 'left 2s ease-in-out';
+    bike.style.left = '50%';
+
     setTimeout(() => {
-        idleCharacter();
+        character.style.transition = 'left 2s ease-in-out';
+        character.style.left = '50%';
+        character.style.transform = 'translate(-50%, -50%)';
+        bike.style.display = 'none';
+        setTimeout(() => {
+            idleCharacter();
+        }, 2000);
     }, 2000);
 }
 
 // Function to animate leaving the office
 function leaveOffice() {
-    character.style.transition = 'left 2s ease-in-out';
-    character.style.left = '100%';
-    character.style.transform = 'translateY(-50%)';
+    character.style.transition = 'left 2s ease-in-out, top 2s ease-in-out';
+    character.style.left = '90%';
+    character.style.top = '90%';
+
+    setTimeout(() => {
+        bike.style.display = 'block';
+        bike.style.left = '90%';
+        bike.style.transition = 'left 2s ease-in-out';
+        bike.style.left = '100%';
+
+        setTimeout(() => {
+            character.style.left = '-100px'; // Move character off-screen
+            character.style.top = '50%';
+            character.style.transform = 'translateY(-50%)';
+            bike.style.display = 'none';
+        }, 2000);
+    }, 2000);
 }
 
 // Show speech bubble every 15 seconds
