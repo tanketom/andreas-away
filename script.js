@@ -125,7 +125,7 @@ function moveCharacter(target = null) {
         const direction = Math.random() < 0.5 ? -1 : 1;
         const distance = Math.random() * 200 + 100;
         newLeft = character.offsetLeft + direction * distance;
-        duration = distance / 50 * 0;
+        duration = distance / 50 * 1000;
     }
 
     if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
