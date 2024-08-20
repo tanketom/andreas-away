@@ -20,6 +20,7 @@ let emailCount = 0;
 let timeSinceCoffee = 0;
 let coffeeTimer;
 let officeHours = { start: 8.5, end: 15.5 }; // 8:30 to 15:30
+let manualOverride = false; // To track manual overrides
 
 // Fetch quotes from quotes.json
 fetchQuotes();
@@ -31,8 +32,14 @@ setInitialPosition();
 initializeTimers();
 
 // Add event listeners for buttons
-arriveButton.addEventListener('click', arriveAtOffice);
-leaveButton.addEventListener('click', leaveOffice);
+arriveButton.addEventListener('click', () => {
+    manualOverride = true;
+    arriveAtOffice();
+});
+leaveButton.addEventListener('click', () => {
+    manualOverride = true;
+    leaveOffice();
+});
 
 // Function to fetch quotes
 function fetchQuotes() {
@@ -297,6 +304,8 @@ function handleEmails() {
 
 // Function to check office hours and animate arrival/departure
 function checkOfficeHours() {
+    if (manualOverride) return; // Skip if manual override is active
+
     const now = new Date();
     const currentHour = now.getHours() + now.getMinutes() / 60;
 
@@ -306,8 +315,8 @@ function checkOfficeHours() {
         leaveOffice();
     }
 
-    // Check every minute
-    setTimeout(checkOfficeHours, 60000);
+    // Check every 30 minutes
+    setTimeout(checkOfficeHours, 1800000);
 }
 
 // Function to animate arrival at office
@@ -324,6 +333,7 @@ function arriveAtOffice() {
         bike.style.display = 'none';
         showTemporaryMessage('I am not made of sugar!', 2000);
         setTimeout(() => {
+            character.style.display = 'block'; // Show character
             idleCharacter();
         }, 2000);
     }, 2000);
