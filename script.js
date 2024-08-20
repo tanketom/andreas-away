@@ -8,192 +8,97 @@ const arriveButton = document.getElementById('arrive-button');
 const leaveButton = document.getElementById('leave-button');
 const bike = document.getElementById('bike');
 
-let quotes = {
-    general: [],
-    coffee: [],
-    email: []
-};
-let isWalking = false;
-let hasCoffee = false;
-let coffeeCups = [];
-let emailCount = 0;
-let timeSinceCoffee = 0;
-let coffeeTimer;
-let officeHours = { start: 8.5, end: 15.5 }; // 8:30 to 15:30
-let manualOverride = false; // To track manual overrides
+let quotes = { general: [], coffee: [], email: [] };
+let isWalking = false, hasCoffee = false, manualOverride = false;
+let coffeeCups = [], emailCount = 0, timeSinceCoffee = 0;
+const officeHours = { start: 8.5, end: 15.5 }; // 8:30 to 15:30
 
 // Fetch quotes from quotes.json
-fetchQuotes();
+fetch('quotes.json')
+    .then(response => response.json())
+    .then(data => quotes = data.quotes)
+    .catch(error => showTemporaryMessage('Failed to load quotes.', 5000));
 
 // Set initial position
-setInitialPosition();
+character.style.left = "-100px";
+character.style.top = "50%";
+character.style.transform = "translateY(-50%)";
 
 // Initialize timers and intervals
-initializeTimers();
+setInterval(showSpeechBubble, 15000);
+setInterval(updateSpeechBubblePosition, 5);
+setTimeout(updateEmailCount, Math.random() * 25000 + 5000);
+setInterval(updateTimeSinceCoffee, 1000);
+checkOfficeHours();
+setInterval(checkOfficeHours, 1800000); // Check every 30 minutes
 
 // Add event listeners for buttons
-arriveButton.addEventListener('click', () => {
-    manualOverride = true;
-    arriveAtOffice();
-});
-leaveButton.addEventListener('click', () => {
-    manualOverride = true;
-    leaveOffice();
-});
+arriveButton.addEventListener('click', () => { manualOverride = true; arriveAtOffice(); });
+leaveButton.addEventListener('click', () => { manualOverride = true; leaveOffice(); });
 
-// Function to fetch quotes
-function fetchQuotes() {
-    fetch('quotes.json')
-        .then(response => response.json())
-        .then(data => {
-            quotes = data.quotes;
-        })
-        .catch(error => {
-            console.error('Error fetching quotes:', error);
-            showTemporaryMessage('Failed to load quotes.', 5000);
-        });
-}
-
-// Function to set initial position
-function setInitialPosition() {
-    character.style.left = "-100px"; // Start off-screen
-    character.style.top = "50%";
-    character.style.transform = "translateY(-50%)";
-}
-
-// Function to initialize timers and intervals
-function initializeTimers() {
-    setInterval(showSpeechBubble, 15000);
-    setInterval(updateSpeechBubblePosition, 5);
-    setTimeout(updateEmailCount, Math.random() * 25000 + 5000);
-    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
-    showSpeechBubble();
-    idleCharacter();
-    checkOfficeHours();
-}
-
-// Function to show speech bubble
 function showSpeechBubble() {
-    const context = getContext();
-    const contextQuotes = getQuotesForContext(context);
-    if (contextQuotes.length > 0) {
-        const randomQuote = contextQuotes[Math.floor(Math.random() * contextQuotes.length)];
-        showTemporaryMessage(randomQuote, 13000);
-    }
+    const contextQuotes = quotes[getContext()] || quotes.general;
+    if (contextQuotes.length) showTemporaryMessage(contextQuotes[Math.floor(Math.random() * contextQuotes.length)], 13000);
 }
 
-// Function to get context based on character's position
 function getContext() {
     const characterRect = character.getBoundingClientRect();
-    const coffeeMachineRect = coffeeMachine.getBoundingClientRect();
-    const emailBoxRect = emailBox.getBoundingClientRect();
-
-    if (isNear(characterRect, coffeeMachineRect)) {
-        return 'coffee';
-    } else if (isNear(characterRect, emailBoxRect)) {
-        return 'email';
-    } else {
-        return 'general';
-    }
+    if (isNear(characterRect, coffeeMachine.getBoundingClientRect())) return 'coffee';
+    if (isNear(characterRect, emailBox.getBoundingClientRect())) return 'email';
+    return 'general';
 }
 
-// Function to check if character is near a target
-function isNear(characterRect, targetRect) {
-    const distance = Math.hypot(
-        characterRect.left - targetRect.left,
-        characterRect.top - targetRect.top
-    );
-    return distance < 100; // Adjust this value as needed
+function isNear(rect1, rect2) {
+    return Math.hypot(rect1.left - rect2.left, rect1.top - rect2.top) < 100;
 }
 
-// Function to get quotes for the given context
-function getQuotesForContext(context) {
-    return quotes[context] || quotes['general'];
-}
-
-// Function to show temporary message in speech bubble
 function showTemporaryMessage(message, duration) {
     speechBubble.textContent = message;
     speechBubble.style.display = 'block';
     updateSpeechBubblePosition();
-    setTimeout(() => {
-        speechBubble.style.display = 'none';
-    }, duration);
+    setTimeout(() => speechBubble.style.display = 'none', duration);
 }
 
-// Function to update speech bubble position
 function updateSpeechBubblePosition() {
     speechBubble.style.left = `${character.offsetLeft + character.offsetWidth / 2 + 8}px`;
     speechBubble.style.top = `${character.offsetTop - speechBubble.offsetHeight}px`;
 }
 
-// Function to handle character movement and motivation
 function moveCharacter(target = null) {
     if (isWalking) return;
-
     isWalking = true;
-    let newLeft, duration;
-
-    if (target) {
-        newLeft = target.offsetLeft + (target === coffeeMachine ? target.offsetWidth : 0);
-        duration = Math.abs(newLeft - character.offsetLeft) / 50 * 1000;
-    } else {
-        const direction = Math.random() < 0.5 ? -1 : 1;
-        const distance = Math.random() * 200 + 100;
-        newLeft = character.offsetLeft + direction * distance;
-        duration = distance / 50 * 1000;
-    }
-
+    const newLeft = target ? target.offsetLeft + (target === coffeeMachine ? target.offsetWidth : 0) : character.offsetLeft + (Math.random() < 0.5 ? -1 : 1) * (Math.random() * 200 + 100);
+    const duration = Math.abs(newLeft - character.offsetLeft) / 50 * 1000;
     if (newLeft > 0 && newLeft < document.body.clientWidth - character.offsetWidth) {
         character.style.transition = `left ${duration}ms ease-in-out`;
         character.style.left = `${newLeft}px`;
     }
-
     setTimeout(() => {
         isWalking = false;
-        if (target) {
-            handleTargetInteraction(target);
-        } else {
-            idleCharacter();
-        }
+        target ? handleTargetInteraction(target) : idleCharacter();
     }, duration);
 }
 
-// Function to handle interactions with targets
 function handleTargetInteraction(target) {
-    if (target === coffeeMachine) {
-        getCoffee();
-    } else if (target === emailBox) {
-        handleEmails();
-    } else {
-        idleCharacter();
-    }
+    if (target === coffeeMachine) getCoffee();
+    else if (target === emailBox) handleEmails();
+    else idleCharacter();
 }
 
-// Function to handle character idling
 function idleCharacter() {
-    const idleTime = Math.random() * 4000 + 3000;
     setTimeout(() => {
-        if (hasCoffee) {
-            prepareToDropCoffee();
-        } else if (timeSinceCoffee > 80 && emailCount > 25) {
+        if (hasCoffee) prepareToDropCoffee();
+        else if (timeSinceCoffee > 80 && emailCount > 25) {
             showTemporaryMessage('Aaaaah! My prioritieees!', 3000);
             moveCharacter(Math.random() < 0.5 ? coffeeMachine : emailBox);
-        } else if (timeSinceCoffee > 80) {
-            moveCharacter(coffeeMachine);
-        } else if (emailCount > 25) {
-            moveCharacter(emailBox);
-        } else if (Math.random() < 0.3) {
-            moveCharacter(coffeeMachine);
-        } else if (emailCount > 0 && Math.random() < 0.5) {
-            moveCharacter(emailBox);
-        } else {
-            moveCharacter();
-        }
-    }, idleTime);
+        } else if (timeSinceCoffee > 80) moveCharacter(coffeeMachine);
+        else if (emailCount > 25) moveCharacter(emailBox);
+        else if (Math.random() < 0.3) moveCharacter(coffeeMachine);
+        else if (emailCount > 0 && Math.random() < 0.5) moveCharacter(emailBox);
+        else moveCharacter();
+    }, Math.random() * 4000 + 3000);
 }
 
-// Function to get coffee
 function getCoffee() {
     hasCoffee = true;
     character.classList.add('holding-coffee');
@@ -202,130 +107,85 @@ function getCoffee() {
     setTimeout(walkWithCoffee, 15000);
 }
 
-// Function to handle walking with coffee
 function walkWithCoffee() {
-    const walkTime = 30000;
-    const startTime = Date.now();
-
-    function walk() {
+    const walkTime = 30000, startTime = Date.now();
+    (function walk() {
         if (Date.now() - startTime < walkTime) {
             moveCharacter();
             setTimeout(walk, 1000);
-        } else {
-            prepareToDropCoffee();
-        }
-    }
-
-    walk();
+        } else prepareToDropCoffee();
+    })();
 }
 
-// Function to prepare to drop coffee
 function prepareToDropCoffee() {
     showTemporaryMessage('A damned fine cup of coffee!', 1000);
     setTimeout(dropCoffee, 1000);
 }
 
-// Function to handle dropping the coffee cup
 function dropCoffee() {
     if (hasCoffee) {
         const coffeeCup = document.createElement('div');
         coffeeCup.textContent = '☕';
         coffeeCup.classList.add('coffee-cup');
-        coffeeCup.style.left = `${character.offsetLeft + character.offsetWidth / 2 - 15}px`; // Center the cup below the character
+        coffeeCup.style.left = `${character.offsetLeft + character.offsetWidth / 2 - 15}px`;
         coffeeCup.style.top = `${character.offsetTop + character.offsetHeight}px`;
         document.body.appendChild(coffeeCup);
         coffeeCups.push(coffeeCup);
-
-        if (coffeeCups.length > 100) {
-            const oldestCup = coffeeCups.shift();
-            document.body.removeChild(oldestCup);
-        }
-
+        if (coffeeCups.length > 100) document.body.removeChild(coffeeCups.shift());
         hasCoffee = false;
         character.classList.remove('holding-coffee');
-        resetCoffeeTimer(); // Reset the coffee timer
+        resetCoffeeTimer();
     }
     moveCharacter();
 }
 
-// Function to update time since last coffee
 function updateTimeSinceCoffee() {
     timeSinceCoffee++;
     timeSinceCoffeeElement.textContent = `Time since last coffee: ${timeSinceCoffee}`;
-    if (timeSinceCoffee > 80) {
-        character.classList.add('needs-coffee');
-    } else {
-        character.classList.remove('needs-coffee');
-    }
+    character.classList.toggle('needs-coffee', timeSinceCoffee > 80);
 }
 
-// Function to reset coffee timer
 function resetCoffeeTimer() {
     clearInterval(coffeeTimer);
     timeSinceCoffee = 0;
     coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
 }
 
-// Function to update email count
 function updateEmailCount() {
-    emailCount += 1;
+    emailCount++;
     emailCountElement.textContent = emailCount;
-    if (emailCount > 25) {
-        character.classList.add('needs-emails');
-    } else {
-        character.classList.remove('needs-emails');
-    }
+    character.classList.toggle('needs-emails', emailCount > 25);
     setTimeout(updateEmailCount, Math.random() * 25000 + 5000);
 }
 
-// Function to handle emails
 function handleEmails() {
-    if (!isNear(character.getBoundingClientRect(), emailBox.getBoundingClientRect())) {
-        idleCharacter();
-        return;
-    }
-
+    if (!isNear(character.getBoundingClientRect(), emailBox.getBoundingClientRect())) return idleCharacter();
     const interval = setInterval(() => {
         if (emailCount > 0) {
             emailCount--;
             emailCountElement.textContent = emailCount;
-            if (emailCount <= 25) {
-                character.classList.remove('needs-emails');
-            }
+            if (emailCount <= 25) character.classList.remove('needs-emails');
         } else {
             clearInterval(interval);
             setTimeout(() => {
                 idleCharacter();
-                setTimeout(updateEmailCount, 5000); // Pause for 5 seconds before increasing again
+                setTimeout(updateEmailCount, 5000);
             }, 5000);
         }
-    }, 300); // Adjusted interval to 300 milliseconds
+    }, 300);
 }
 
-// Function to check office hours and animate arrival/departure
 function checkOfficeHours() {
-    if (manualOverride) return; // Skip if manual override is active
-
-    const now = new Date();
-    const currentHour = now.getHours() + now.getMinutes() / 60;
-
-    if (currentHour >= officeHours.start && currentHour < officeHours.end) {
-        arriveAtOffice();
-    } else {
-        leaveOffice();
-    }
-
-    // Check every 30 minutes
-    setTimeout(checkOfficeHours, 1800000);
+    if (manualOverride) return;
+    const now = new Date(), currentHour = now.getHours() + now.getMinutes() / 60;
+    currentHour >= officeHours.start && currentHour < officeHours.end ? arriveAtOffice() : leaveOffice();
 }
 
-// Function to animate arrival at office
 function arriveAtOffice() {
     bike.style.display = 'block';
     bike.style.left = '100%';
     bike.style.transition = 'left 2s ease-in-out';
     bike.style.left = '50%';
-
     setTimeout(() => {
         character.style.transition = 'left 2s ease-in-out';
         character.style.left = '50%';
@@ -333,29 +193,26 @@ function arriveAtOffice() {
         bike.style.display = 'none';
         showTemporaryMessage('I am not made of sugar!', 2000);
         setTimeout(() => {
-            character.style.display = 'block'; // Show character
+            character.style.display = 'block';
             idleCharacter();
         }, 2000);
     }, 2000);
 }
 
-// Function to animate leaving the office
 function leaveOffice() {
     showTemporaryMessage('This machine kills fascists!', 2000);
     character.style.transition = 'left 2s ease-in-out, top 2s ease-in-out';
     character.style.left = '90%';
     character.style.top = '90%';
-
     setTimeout(() => {
         bike.style.display = 'block';
         bike.style.left = '90%';
         bike.style.transition = 'left 2s ease-in-out';
         bike.style.left = '100%';
-
         setTimeout(() => {
-            character.style.display = 'none'; // Hide character
-            speechBubble.style.display = 'none'; // Hide speech bubble
-            character.style.left = '-100px'; // Move character off-screen
+            character.style.display = 'none';
+            speechBubble.style.display = 'none';
+            character.style.left = '-100px';
             character.style.top = '50%';
             character.style.transform = 'translateY(-50%)';
             bike.style.display = 'none';
@@ -363,16 +220,7 @@ function leaveOffice() {
     }, 2000);
 }
 
-// Show speech bubble every 15 seconds
-setInterval(showSpeechBubble, 15000);
-
-// Update speech bubble position continuously
-setInterval(updateSpeechBubblePosition, 5);
-
 // Initial call to show speech bubble and start idling
 showSpeechBubble();
 idleCharacter();
 updateEmailCount();
-
-// Initialize coffee timer
-coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
