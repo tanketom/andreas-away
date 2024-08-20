@@ -51,7 +51,7 @@ function initializeTimers() {
     setInterval(showSpeechBubble, 15000);
     setInterval(updateSpeechBubblePosition, 5);
     setInterval(updateEmailCount, Math.random() * 25000 + 5000);
-    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
+    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000); // Ensure this is only set once
     showSpeechBubble();
     idleCharacter();
 }
@@ -247,7 +247,6 @@ function updateTimeSinceCoffee() {
 function resetCoffeeTimer() {
     clearInterval(coffeeTimer);
     timeSinceCoffee = 0;
-    coffeeTimer = setInterval(updateTimeSinceCoffee, 1000);
 }
 
 // Function to update email count
@@ -264,6 +263,11 @@ function updateEmailCount() {
 
 // Function to handle emails
 function handleEmails() {
+    if (!isNear(character.getBoundingClientRect(), emailBox.getBoundingClientRect())) {
+        idleCharacter();
+        return;
+    }
+
     const interval = setInterval(() => {
         if (emailCount > 0) {
             emailCount--;
@@ -273,7 +277,10 @@ function handleEmails() {
             }
         } else {
             clearInterval(interval);
-            idleCharacter();
+            setTimeout(() => {
+                idleCharacter();
+                setTimeout(updateEmailCount, 5000); // Pause for 5 seconds before increasing again
+            }, 5000);
         }
     }, 300); // Adjusted interval to 300 milliseconds
 }
