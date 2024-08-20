@@ -307,7 +307,7 @@ function checkOfficeHours() {
     }
 
     // Check every minute
-    setTimeout(checkOfficeHours, 1800000);
+    setTimeout(checkOfficeHours, 60000);
 }
 
 // Function to animate arrival at office
@@ -322,6 +322,7 @@ function arriveAtOffice() {
         character.style.left = '50%';
         character.style.transform = 'translate(-50%, -50%)';
         bike.style.display = 'none';
+        showTemporaryMessage('I am not made of sugar!', 2000);
         setTimeout(() => {
             idleCharacter();
         }, 2000);
@@ -330,6 +331,7 @@ function arriveAtOffice() {
 
 // Function to animate leaving the office
 function leaveOffice() {
+    showTemporaryMessage('This machine kills fascists!', 2000);
     character.style.transition = 'left 2s ease-in-out, top 2s ease-in-out';
     character.style.left = '90%';
     character.style.top = '90%';
@@ -341,6 +343,8 @@ function leaveOffice() {
         bike.style.left = '100%';
 
         setTimeout(() => {
+            character.style.display = 'none'; // Hide character
+            speechBubble.style.display = 'none'; // Hide speech bubble
             character.style.left = '-100px'; // Move character off-screen
             character.style.top = '50%';
             character.style.transform = 'translateY(-50%)';
