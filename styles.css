@@ -99,6 +99,20 @@ header, main, footer {
     z-index: 4;
 }
 
+#time-since-coffee {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem;
+    border-radius: 0.3125rem; /* 5px */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    z-index: 5;
+    font-size: 1rem; /* Adjust font size as needed */
+    text-align: center;
+}
+
 #footer {
     margin-top: auto;
     background-color: #333;
@@ -174,33 +188,21 @@ header, main, footer {
     animation: dropCoffee 1s forwards;
 }
 
-#debug-button {
+#stats {
     position: absolute;
     bottom: 1rem;
-    right: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #743a9c;
-    color: white;
-    border: none;
-    border-radius: 0.3125rem; /* 5px */
-    cursor: pointer;
-    z-index: 6;
-}
-
-#debug-button:hover {
-    background-color: #5a2d7a;
-}
-
-#time-since-coffee {
-    position: absolute;
-    top: 0;
     left: 50%;
     transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
     background-color: rgba(255, 255, 255, 0.8);
-    padding: 0.5rem;
+    padding: 0.625rem; /* 10px */
     border-radius: 0.3125rem; /* 5px */
     box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
     z-index: 5;
-    font-size: 1rem; /* Adjust font size as needed */
-    text-align: center;
+}
+
+#stats div {
+    font-size: 1.25rem; /* 20px */
+    color: #333;
 }
